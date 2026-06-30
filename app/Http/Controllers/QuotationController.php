@@ -10,6 +10,59 @@ use Illuminate\Http\Request;
 
 class QuotationController extends Controller
 {
+    public function index()
+    {
+        return view('pages.quotations.index');
+    }
+
+    public function getQuotationsData()
+    {
+        $orgId = auth()->user()->organisation_id;
+        $query = Quotation::where('organisation_id', $orgId)
+            ->with(['lead', 'customer']);
+
+        return \Yajra\DataTables\Facades\DataTables::of($query)
+            ->addColumn('quotation_number_link', function ($quotation) {
+                $url = route('quotations.show', $quotation->id);
+                return '<a href="' . $url . '" class="fw-bold text-primary text-decoration-none">' . $quotation->quotation_number . '</a>';
+            })
+            ->addColumn('client_name', function ($quotation) {
+                if ($quotation->customer) {
+                    return $quotation->customer->name;
+                }
+                return 'N/A';
+            })
+            ->addColumn('amount_formatted', function ($quotation) {
+                return '₹ ' . number_format($quotation->total_amount, 2);
+            })
+            ->addColumn('status_badge', function ($quotation) {
+                return '<span class="badge bg-info">' . ucfirst($quotation->status) . '</span>';
+            })
+            ->addColumn('created_date', function ($quotation) {
+                return $quotation->created_at->format('d M Y');
+            })
+            ->addColumn('actions', function ($quotation) {
+                $showUrl = route('quotations.show', $quotation->id);
+                $pdfUrl = route('quotations.pdf.download', $quotation->id);
+                return '<div class="btn-group">' .
+                    '<a href="' . $pdfUrl . '" class="btn btn-sm btn-outline-dark" title="Download PDF"><i class="fas fa-file-pdf"></i></a>' .
+                    '<a href="' . $showUrl . '" class="btn btn-sm btn-outline-primary" title="View"><i class="fas fa-eye"></i></a>' .
+                    '</div>';
+            })
+            ->rawColumns(['quotation_number_link', 'status_badge', 'actions'])
+            ->make(true);
+    }
+
+    public function show($id)
+    {
+        $orgId = auth()->user()->organisation_id;
+        $quotation = Quotation::where('organisation_id', $orgId)
+            ->with(['lead', 'items', 'customer'])
+            ->findOrFail($id);
+
+        return view('pages.quotations.show', compact('quotation'));
+    }
+
     public function create(Request $request)
     {
         $leadId = $request->lead_id;
@@ -165,6 +218,13 @@ class QuotationController extends Controller
 
         $activeTab = 'quotations';
 
+        if (request()->headers->get('referer') && str_contains(request()->headers->get('referer'), 'quotations/' . $id)) {
+            return $this->ajaxResponse('success', 'Quotation updated successfully!', [
+                'close_modal' => true,
+                'reload_page' => true
+            ]);
+        }
+
         return $this->ajaxResponse('success', 'Quotation updated successfully!', [
             'close_modal' => true,
             'update' => ['#leadTabsContent' => ['action' => 'replace', 'html' => view('pages.leads.components.tabs', compact('lead', 'activeTab'))->render()]]
@@ -181,6 +241,12 @@ class QuotationController extends Controller
             $quotation->items()->delete();
             $quotation->delete();
         });
+
+        if (request()->headers->get('referer') && str_contains(request()->headers->get('referer'), 'quotations/' . $id)) {
+            return $this->ajaxResponse('success', 'Quotation deleted successfully!', [
+                'redirect' => route('quotations.index')
+            ]);
+        }
 
         return $this->ajaxResponse('success', 'Quotation deleted successfully!', [
             'update' => ['#leadTabsContent' => ['action' => 'replace', 'html' => view('pages.leads.components.tabs', compact('lead'))->render()]]

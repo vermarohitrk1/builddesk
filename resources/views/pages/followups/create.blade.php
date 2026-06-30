@@ -3,7 +3,7 @@
     <input type="hidden" name="lead_id" value="{{ $lead->id }}">
     
     <div class="mb-3">
-        <label class="form-label">Follow-up Date <span class="text-danger">*</span></label>
+        <label class="form-label">Follow-up Datetime <span class="text-danger">*</span></label>
         <input type="datetime-local" name="followup_date" class="form-control" required value="{{ now()->addDay()->format('Y-m-d\TH:i') }}">
     </div>
 

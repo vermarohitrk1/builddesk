@@ -3,8 +3,8 @@
     @method('PUT')
     
     <div class="mb-3">
-        <label class="form-label">Follow-up Date <span class="text-danger">*</span></label>
-        <input type="datetime-local" name="followup_date" class="form-control" required value="{{ $followup->followup_date->format('Y-m-d\T\H:i') }}">
+        <label class="form-label">Follow-up Datetime <span class="text-danger">*</span></label>
+        <input type="datetime-local" name="followup_date" class="form-control" required value="{{ $followup->followup_date->format('Y-m-d H:i') }}">
     </div>
 
     <div class="mb-3">

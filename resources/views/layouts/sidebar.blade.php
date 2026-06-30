@@ -34,10 +34,10 @@
                 <a href="{{ route('leads.index') }}"><i class="fas fa-user-tie me-2"></i> Leads</a>
             </li>
             <li class="{{ request()->is('projects*') ? 'active' : '' }}">
-                <a href="#"><i class="fas fa-project-diagram me-2"></i> Projects</a>
+                <a href="{{ route('projects.index') }}"><i class="fas fa-project-diagram me-2"></i> Projects</a>
             </li>
             <li class="{{ request()->is('quotations*') ? 'active' : '' }}">
-                <a href="#"><i class="fas fa-file-invoice-dollar me-2"></i> Quotations</a>
+                <a href="{{ route('quotations.index') }}"><i class="fas fa-file-invoice-dollar me-2"></i> Quotations</a>
             </li>
             <li class="{{ request()->is('customers*') ? 'active' : '' }}">
                 <a href="#"><i class="fas fa-users me-2"></i> Customers</a>
@@ -72,7 +72,7 @@
                 </ul>
             </li>
             <li class="{{ request()->is('expenses*') ? 'active' : '' }}">
-                <a href="{{ route('expenses.index') }}"><i class="fas fa-wallet' me-2"></i> Expenses</a>
+                <a href="{{ route('expenses.index') }}"><i class="fas fa-wallet me-2"></i> Expenses</a>
             </li>
             <li class="{{ request()->is('employees*') ? 'active' : '' }}">
                 <a href="{{ route('employees.index') }}"><i class="fas fa-id-card me-2"></i> HRM</a>

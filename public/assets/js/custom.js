@@ -216,3 +216,90 @@ $(document).on('click', function (e) {
     }
 });
 
+
+
+// ----------------- Supplier Modal -----------------
+
+$(document).ready(function () {
+
+    $(document).on('change', '#expense-supplier-select', function () {
+
+        // const supplierModalEl = document.getElementById('supplierModal');
+        // let supplierModal;
+
+        // // Avoid double instantiation issue if script re-runs
+        // if (supplierModalEl) {
+        //     supplierModal = new bootstrap.Modal(supplierModalEl);
+        // }
+
+        if ($(this).val() === 'add_new_supplier') {
+            // Reset selection to default empty
+            $(this).val('');
+
+            // Clear errors and input fields inside supplier form
+            $('#supplier-errors').addClass('d-none').html('');
+            $('#inline-supplier-form')[0].reset();
+
+            // Show modal
+            // if (supplierModal) {
+            //     supplierModal.show();
+            // }
+            $('#supplierModal').modal('show');
+        }
+    });
+
+    $(document).on('submit', '#inline-supplier-form', function (e) {
+        e.preventDefault();
+
+        const $form = $(this);
+        const $submitBtn = $('#save-inline-supplier-btn');
+        $submitBtn.prop('disabled', true).text('Saving...');
+        $('#supplier-errors').addClass('d-none').html('');
+
+        $.ajax({
+            url: BASE_URL + "/suppliers",
+            method: "POST",
+            data: $form.serialize(),
+            success: function (response) {
+                $submitBtn.prop('disabled', false).text('Save Supplier');
+
+                if (response.status === 'success') {
+                    const newSupplier = response.data.supplier;
+
+                    // Create new option and insert it right after the Add New Supplier option
+                    const newOption = $('<option>', {
+                        value: newSupplier.id,
+                        text: newSupplier.name,
+                        selected: true
+                    });
+
+                    $('#expense-supplier-select option[value="add_new_supplier"]').after(newOption);
+
+                    // Close the modal
+                    $('#supplierModal').modal('hide');
+
+                    // Success toast if Toastr is available, or alert
+                    if (typeof toastr !== 'undefined') {
+                        toastr.success('Supplier added successfully!');
+                    }
+                } else {
+                    $('#supplier-errors').removeClass('d-none').html(response.message || 'Validation failed.');
+                }
+            },
+            error: function (xhr) {
+                $submitBtn.prop('disabled', false).text('Save Supplier');
+                let errMsg = 'Something went wrong. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    const errors = xhr.responseJSON.errors;
+                    errMsg = '';
+                    Object.keys(errors).forEach(key => {
+                        errMsg += `<div>${errors[key][0]}</div>`;
+                    });
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errMsg = xhr.responseJSON.message;
+                }
+                $('#supplier-errors').removeClass('d-none').html(errMsg);
+            }
+        });
+    });
+});

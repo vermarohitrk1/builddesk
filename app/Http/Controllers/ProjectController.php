@@ -13,11 +13,39 @@ class ProjectController extends Controller
 
     public function index()
     {
+        return view('pages.projects.index');
+    }
+
+    public function getProjectsData()
+    {
         $orgId = auth()->user()->organisation_id;
+        $query = Project::where('organisation_id', $orgId)
+            ->with(['lead', 'lead.customer', 'createdBy']);
 
-        $projects = Project::where('organisation_id', $orgId)->get();
-
-        return view('pages.projects.index', compact('projects'));
+        return \Yajra\DataTables\Facades\DataTables::of($query)
+            ->addColumn('project_number_link', function ($project) {
+                $url = route('projects.show', $project->id);
+                return '<a href="' . $url . '" class="fw-bold text-primary text-decoration-none">' . $project->project_number . '</a>';
+            })
+            ->addColumn('client_name', function ($project) {
+                if ($project->lead && $project->lead->customer) {
+                    $url = route('leads.show', $project->lead->id);
+                    return '<a href="' . $url . '" class="fw-bold text-dark text-decoration-none">' . $project->lead->customer->name . '</a>';
+                }
+                return '<span class="text-muted">N/A</span>';
+            })
+            ->addColumn('started_date', function ($project) {
+                return $project->started_at ? $project->started_at->format('d M Y') : 'N/A';
+            })
+            ->addColumn('created_by_name', function ($project) {
+                return $project->createdBy ? $project->createdBy->name : 'System';
+            })
+            ->addColumn('actions', function ($project) {
+                $showUrl = route('projects.show', $project->id);
+                return '<a href="' . $showUrl . '" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye me-1"></i> View Project</a>';
+            })
+            ->rawColumns(['project_number_link', 'client_name', 'actions'])
+            ->make(true);
     }
 
     public function show($id)

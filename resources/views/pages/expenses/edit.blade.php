@@ -20,7 +20,7 @@
 
     <div class="mb-3">
         <label class="form-label">Supplier</label>
-        <select name="supplier_id" id="expense-supplier-select-edit" class="form-select">
+        <select name="supplier_id" id="expense-supplier-select" class="form-select">
             <option value="">[Select Supplier]</option>
             <option value="add_new_supplier" class="text-primary fw-bold">+ Add New Supplier</option>
             @foreach($suppliers as $supplier)
@@ -74,16 +74,16 @@
 </form>
 
 <!-- Inline Supplier Bootstrap Modal -->
-<div class="modal fade" id="supplierModalEdit" tabindex="-1" aria-labelledby="supplierModalEditLabel" aria-hidden="true" style="z-index: 1070;">
+<div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true" style="z-index: 1070;">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="supplierModalEditLabel">Add New Supplier</h5>
+                <h5 class="modal-title" id="supplierModalLabel">Add New Supplier</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="alert alert-danger d-none" id="supplier-errors-edit"></div>
-                <form id="inline-supplier-form-edit">
+                <div class="alert alert-danger d-none" id="supplier-errors"></div>
+                <form id="inline-supplier-form">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Supplier Name <span class="text-danger">*</span></label>
@@ -107,7 +107,7 @@
                     </div>
                     <div class="text-end border-top pt-3">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="save-inline-supplier-edit-btn">Save Supplier</button>
+                        <button type="submit" class="btn btn-primary" id="save-inline-supplier-btn">Save Supplier</button>
                     </div>
                 </form>
             </div>
@@ -115,80 +115,4 @@
     </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    const supplierModalEl = document.getElementById('supplierModalEdit');
-    let supplierModal;
-    
-    if (supplierModalEl) {
-        supplierModal = new bootstrap.Modal(supplierModalEl);
-    }
 
-    $('#expense-supplier-select-edit').on('change', function() {
-        if ($(this).val() === 'add_new_supplier') {
-            $(this).val('');
-            
-            $('#supplier-errors-edit').addClass('d-none').html('');
-            $('#inline-supplier-form-edit')[0].reset();
-            
-            if (supplierModal) {
-                supplierModal.show();
-            }
-        }
-    });
-
-    $('#inline-supplier-form-edit').on('submit', function(e) {
-        e.preventDefault();
-        
-        const $form = $(this);
-        const $submitBtn = $('#save-inline-supplier-edit-btn');
-        $submitBtn.prop('disabled', true).text('Saving...');
-        $('#supplier-errors-edit').addClass('d-none').html('');
-
-        $.ajax({
-            url: "{{ route('suppliers.store') }}",
-            method: "POST",
-            data: $form.serialize(),
-            success: function(response) {
-                $submitBtn.prop('disabled', false).text('Save Supplier');
-                
-                if (response.status === 'success') {
-                    const newSupplier = response.data.supplier;
-                    
-                    const newOption = $('<option>', {
-                        value: newSupplier.id,
-                        text: newSupplier.name,
-                        selected: true
-                    });
-                    
-                    $('#expense-supplier-select-edit option[value="add_new_supplier"]').after(newOption);
-                    
-                    if (supplierModal) {
-                        supplierModal.hide();
-                    }
-                    
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success('Supplier added successfully!');
-                    }
-                } else {
-                    $('#supplier-errors-edit').removeClass('d-none').html(response.message || 'Validation failed.');
-                }
-            },
-            error: function(xhr) {
-                $submitBtn.prop('disabled', false).text('Save Supplier');
-                let errMsg = 'Something went wrong. Please try again.';
-                if (xhr.responseJSON && xhr.responseJSON.errors) {
-                    const errors = xhr.responseJSON.errors;
-                    errMsg = '';
-                    Object.keys(errors).forEach(key => {
-                        errMsg += `<div>${errors[key][0]}</div>`;
-                    });
-                } else if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errMsg = xhr.responseJSON.message;
-                }
-                $('#supplier-errors-edit').removeClass('d-none').html(errMsg);
-            }
-        });
-    });
-});
-</script>

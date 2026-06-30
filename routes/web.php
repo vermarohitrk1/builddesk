@@ -91,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{id}/pdf/download', [QuotationController::class, 'downloadPdf'])->name('quotations.pdf.download');
         Route::get('/{id}/pdf/preview', [QuotationController::class, 'previewPdf'])->name('quotations.pdf.preview');
     });
+    Route::get('/quotations/datatable', [QuotationController::class, 'getQuotationsData'])->name('quotations.datatable');
     Route::resource('quotations', QuotationController::class);
 
     /**
@@ -102,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
     /**
      * Project Routes
      */
+    Route::get('/projects/datatable', [ProjectController::class, 'getProjectsData'])->name('projects.datatable');
     Route::resource('projects', ProjectController::class);
 
     /**
