@@ -18,10 +18,13 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\LeadFollowupController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SettingsController;
 
 Route::get('/', function () {
@@ -96,4 +99,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/followups/{id}/complete', [LeadFollowupController::class, 'complete'])->name('followups.complete');
     Route::resource('followups', LeadFollowupController::class)->except(['index', 'show']);
 
+    /**
+     * Project Routes
+     */
+    Route::resource('projects', ProjectController::class);
+
+    /**
+     * Expense & Supplier Routes
+     */
+    Route::get('/expenses/datatable', [ExpenseController::class, 'getExpensesData'])->name('expenses.datatable');
+    Route::resource('expenses', ExpenseController::class);
+    Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+
 });
+

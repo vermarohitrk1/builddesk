@@ -11,16 +11,12 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organisation_id')->constrained('organisations');
-            $table->foreignId('customer_id')->constrained('customers');
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
-            $table->enum('status', ['pending', 'in_progress', 'completed', 'on_hold', 'cancelled'])->default('pending');
+            $table->foreignId('lead_id')->unique()->constrained('leads');
+            $table->string('project_number')->unique();
+            $table->timestamp('started_at');
             $table->foreignId('created_by')->nullable()->constrained('users');
-            $table->foreignId('updated_by')->nullable()->constrained('users');
+            $table->text('notes')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

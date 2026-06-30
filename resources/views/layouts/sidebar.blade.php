@@ -72,7 +72,7 @@
                 </ul>
             </li>
             <li class="{{ request()->is('expenses*') ? 'active' : '' }}">
-                <a href="#"><i class="fas fa-truck me-2"></i> Expenses</a>
+                <a href="{{ route('expenses.index') }}"><i class="fas fa-wallet' me-2"></i> Expenses</a>
             </li>
             <li class="{{ request()->is('employees*') ? 'active' : '' }}">
                 <a href="{{ route('employees.index') }}"><i class="fas fa-id-card me-2"></i> HRM</a>

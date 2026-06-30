@@ -5,13 +5,27 @@
     <div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-1">
-                <li class="breadcrumb-item"><a href="{{ route('leads.index') }}">Leads</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ $lead->contact_name }}</li>
+                @if($lead->project)
+                    <li class="breadcrumb-item"><a href="{{ route('projects.index') }}">Projects</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $lead->project->project_number }}</li>
+                @else
+                    <li class="breadcrumb-item"><a href="{{ route('leads.index') }}">Leads</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ $lead->contact_name }}</li>
+                @endif
             </ol>
         </nav>
         <h1 class="h3 mb-0">{{ $lead->contact_name }}</h1>
     </div>
     <div class="btn-group">
+        @if(!$lead->project)
+        <a href="{{ route('projects.store') }}"
+            class="btn btn-success ajax-link me-2"
+            data-method="POST"
+            data-data='{"lead_id": {{ $lead->id }}}'
+            data-confirm="Start a project for this lead? The lead status will be updated to Confirmed.">
+            <i class="fas fa-rocket me-1"></i> Start Project
+        </a>
+        @endif
         <button class="btn btn-outline-primary modal-trigger" data-url="{{ route('leads.edit', $lead->id) }}" data-title="Edit Lead" data-size="modal-lg">
             <i class="fas fa-edit me-1"></i> Edit Lead
         </button>
@@ -36,8 +50,8 @@
                             'measurement_completed'  => 'bg-success',
                             'quotation_sent'         => 'bg-info',
                             'negotiation'            => 'bg-primary',
-                            'won'                    => 'bg-success',
-                            'lost'                   => 'bg-danger'
+                            'lost'                   => 'bg-danger',
+                            'confirmed'              => 'bg-success',
                         ][$lead->status] ?? 'bg-secondary';
                     @endphp
                     <span class="badge {{ $statusClass }}">{{ ucfirst(str_replace('_', ' ', $lead->status)) }}</span>
@@ -65,6 +79,25 @@
                     <label class="text-muted small d-block">Project Address</label>
                     <p class="mb-0">{{ $lead->project_address ?: 'Not provided' }}</p>
                 </div>
+
+                @if($lead->project)
+                <hr>
+                <div class="p-3 rounded border border-success bg-light">
+                    <div class="fw-bold text-success mb-2"><i class="fas fa-check-circle me-1"></i> Project Active</div>
+                    <div class="mb-1 small">
+                        <span class="text-muted">Project #:</span>
+                        <strong class="ms-1">{{ $lead->project->project_number }}</strong>
+                    </div>
+                    <div class="mb-1 small">
+                        <span class="text-muted">Started:</span>
+                        <strong class="ms-1">{{ $lead->project->started_at->format('d M Y') }}</strong>
+                    </div>
+                    <div class="small">
+                        <span class="text-muted">By:</span>
+                        <strong class="ms-1">{{ $lead->project->createdBy?->name ?? 'System' }}</strong>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>

@@ -26,7 +26,7 @@ class LeadController extends Controller
     {
         $orgId = auth()->user()->organisation_id;
         $lead = Lead::where('organisation_id', $orgId)
-            ->with(['measurements', 'quotations', 'customer'])
+            ->with(['measurements', 'measurements.items', 'quotations', 'quotations.items', 'followups', 'customer', 'project', 'project.createdBy'])
             ->findOrFail($id);
         
         return view('pages.leads.show', compact('lead'));
@@ -53,7 +53,7 @@ class LeadController extends Controller
                     'measurement_completed' => 'bg-success',
                     'quotation_sent' => 'bg-info',
                     'negotiation' => 'bg-primary',
-                    'won' => 'bg-success',
+                    'confirmed' => 'bg-success',
                     'lost' => 'bg-danger'
                 ][$lead->status] ?? 'bg-secondary';
                 return '<span class="badge ' . $class . '">' . ucfirst(str_replace('_', ' ', $lead->status)) . '</span>';
@@ -175,7 +175,7 @@ class LeadController extends Controller
             'source' => 'required|in:website,facebook,instagram,google,referral,builder,architect,walk_in,other',
             'lead_type' => 'required|in:residential,commercial',
             'project_type' => 'nullable|in:villa,apartment,office,shop,hotel',
-            'status' => 'required|in:new,contacted,site_visit_scheduled,measurement_pending,measurement_completed,quotation_sent,negotiation,won,lost',
+            'status' => 'required|in:new,contacted,site_visit_scheduled,measurement_pending,measurement_completed,quotation_sent,negotiation,lost,confirmed',
         ];
 
         $validator = \Validator::make($request->all(), $rules);

@@ -70,7 +70,7 @@
         <select name="status" class="form-select">
             @foreach([
                 'new', 'contacted', 'site_visit_scheduled', 'measurement_pending', 
-                'measurement_completed', 'quotation_sent', 'negotiation', 'won', 'lost'
+                'measurement_completed', 'quotation_sent', 'negotiation', 'confirmed', 'lost'
             ] as $status)
                 <option value="{{ $status }}" {{ $lead->status == $status ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
             @endforeach

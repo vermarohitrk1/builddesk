@@ -68,6 +68,11 @@ class Lead extends Model
         return $this->hasMany(LeadFollowup::class)->latest('followup_date');
     }
 
+    public function project()
+    {
+        return $this->hasOne(Project::class);
+    }
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

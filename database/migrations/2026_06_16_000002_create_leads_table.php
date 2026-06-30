@@ -29,7 +29,7 @@ return new class extends Migration
             
             $table->enum('status', [
                 'new', 'contacted', 'site_visit_scheduled', 'measurement_pending', 
-                'measurement_completed', 'quotation_sent', 'negotiation', 'won', 'lost'
+                'measurement_completed', 'quotation_sent', 'negotiation', 'confirmed', 'lost'
             ])->default('new');
             
             $table->text('notes')->nullable();
