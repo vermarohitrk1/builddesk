@@ -30,6 +30,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ExpenseCategoryController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -67,6 +68,8 @@ Route::middleware(['auth'])->group(function () {
      * Settings Routes
      */
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::get('/settings/partial/basic', [SettingsController::class, 'getBasic'])->name('settings.basic');
+    Route::get('/settings/partial/categories', [SettingsController::class, 'getExpenseCategories'])->name('settings.expense_categories');
     Route::post('/settings/logo', [SettingsController::class, 'updateOrganisationLogo'])->name('settings.logo.update');
 
     /**
@@ -116,6 +119,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/expenses/datatable', [ExpenseController::class, 'getExpensesData'])->name('expenses.datatable');
     Route::resource('expenses', ExpenseController::class);
     Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+
+    /**
+     * Expense Category Routes (managed from Settings)
+     */
+    Route::prefix('expenses/categories')->name('expenses.categories.')->group(function () {
+        Route::get('/data', [ExpenseCategoryController::class, 'getData'])->name('data');
+        Route::get('/create', [ExpenseCategoryController::class, 'create'])->name('create');
+        Route::post('/', [ExpenseCategoryController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [ExpenseCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [ExpenseCategoryController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ExpenseCategoryController::class, 'destroy'])->name('destroy');
+    });
 
     /**
      * Customer Routes

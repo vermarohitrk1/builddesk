@@ -11,8 +11,17 @@ class SettingsController extends Controller
 {
     public function index()
     {
-        $organisation = Auth::user()->organisation;
-        return view('pages.settings.index', compact('organisation'));
+        return view('pages.settings.index');
+    }
+
+    public function getBasic()
+    {
+        return view('pages.settings.partials.basic');
+    }
+
+    public function getExpenseCategories()
+    {
+        return view('pages.settings.partials.expense_categories');
     }
 
     public function updateOrganisationLogo(Request $request)
