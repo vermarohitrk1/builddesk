@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Generate monthly salary payroll on the 1st of every month at 8:00 AM
+        $schedule->command('payroll:generate-monthly')->monthlyOn(1, '08:00');
     }
 
     /**

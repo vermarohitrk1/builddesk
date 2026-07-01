@@ -80,8 +80,34 @@
             <li class="{{ request()->is('expenses*') ? 'active' : '' }}">
                 <a href="{{ route('expenses.index') }}"><i class="fas fa-wallet me-2"></i> Expenses</a>
             </li>
-            <li class="{{ request()->is('employees*') ? 'active' : '' }}">
-                <a href="{{ route('employees.index') }}"><i class="fas fa-id-card me-2"></i> HRM</a>
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#hrmMenu"
+                    role="button"
+                    aria-expanded="{{ request()->is('employees*') || request()->is('payrolls*') ? 'true' : 'false' }}">
+                    <span>
+                        <i class="fas fa-id-card me-2"></i>
+                        HRM
+                    </span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+
+                <ul class="collapse list-unstyled {{ request()->is('employees*') || request()->is('payrolls*') ? 'show' : '' }}"
+                    id="hrmMenu">
+                    <li>
+                        <a href="{{ route('employees.index') }}"
+                            class="nav-link ps-5 {{ request()->is('employees*') ? 'active' : '' }}">
+                            Employees
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('payrolls.index') }}"
+                            class="nav-link ps-5 {{ request()->is('payrolls*') ? 'active' : '' }}">
+                            Payroll
+                        </a>
+                    </li>
+                </ul>
             </li>
         @endif
 

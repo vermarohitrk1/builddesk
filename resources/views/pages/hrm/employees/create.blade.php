@@ -34,6 +34,16 @@
         <label class="form-label">Monthly Salary</label>
         <input type="number" name="salary" class="form-control" step="0.01">
     </div>
+    <div class="mb-3">
+        <div class="form-check form-switch">
+            <input type="hidden" name="auto_generate_salary" value="0">
+            <input class="form-check-input" type="checkbox" name="auto_generate_salary" id="auto_generate_salary_create" value="1">
+            <label class="form-check-label" for="auto_generate_salary_create">
+                Auto Generate Salary
+                <small class="text-muted d-block">Include this employee in monthly payroll auto-generation (Salary only).</small>
+            </label>
+        </div>
+    </div>
 
     <div class="text-end">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

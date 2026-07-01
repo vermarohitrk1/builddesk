@@ -28,6 +28,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PayrollController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -138,6 +139,19 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/financial-statement', [ReportController::class, 'cashFlow'])->name('cashflow');
         Route::get('/financial-statement/pdf', [ReportController::class, 'cashFlowPdf'])->name('cashflow.pdf');
         Route::get('/financial-statement/excel', [ReportController::class, 'cashFlowExcel'])->name('cashflow.excel');
+    });
+
+    /**
+     * Payroll Routes
+     */
+    Route::prefix('payrolls')->name('payrolls.')->group(function () {
+        Route::get('/', [PayrollController::class, 'index'])->name('index');
+        Route::get('/data', [PayrollController::class, 'getData'])->name('data');
+        Route::get('/generate-modal', [PayrollController::class, 'showGenerateModal'])->name('generate.modal');
+        Route::post('/generate', [PayrollController::class, 'generate'])->name('generate');
+        Route::post('/mark-paid', [PayrollController::class, 'markPaid'])->name('mark-paid');
+        Route::post('/{id}/cancel', [PayrollController::class, 'cancel'])->name('cancel');
+        Route::get('/export', [PayrollController::class, 'export'])->name('export');
     });
 
 });

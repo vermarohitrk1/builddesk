@@ -52,13 +52,14 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
-            'employee_code' => 'required|string|unique:employees,employee_code',
-            'designation' => 'nullable|string',
-            'joining_date' => 'nullable|date',
-            'salary' => 'nullable|numeric',
+            'name'                  => 'required|string|max:255',
+            'email'                 => 'required|email|unique:users,email',
+            'password'              => 'required|min:6',
+            'employee_code'         => 'required|string|unique:employees,employee_code',
+            'designation'           => 'nullable|string',
+            'joining_date'          => 'nullable|date',
+            'salary'                => 'nullable|numeric',
+            'auto_generate_salary'  => 'nullable|boolean',
         ];
 
         $validator = \Validator::make($request->all(), $rules);
@@ -96,12 +97,13 @@ class EmployeeController extends Controller
         $employee = Employee::where('organisation_id', $orgId)->findOrFail($id);
 
         $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $employee->user_id,
-            'employee_code' => 'required|string|unique:employees,employee_code,' . $id,
-            'designation' => 'nullable|string',
-            'joining_date' => 'nullable|date',
-            'salary' => 'nullable|numeric',
+            'name'                  => 'required|string|max:255',
+            'email'                 => 'required|email|unique:users,email,' . $employee->user_id,
+            'employee_code'         => 'required|string|unique:employees,employee_code,' . $id,
+            'designation'           => 'nullable|string',
+            'joining_date'          => 'nullable|date',
+            'salary'                => 'nullable|numeric',
+            'auto_generate_salary'  => 'nullable|boolean',
         ];
 
         $validator = \Validator::make($request->all(), $rules);

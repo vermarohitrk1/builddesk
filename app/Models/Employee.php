@@ -19,6 +19,15 @@ class Employee extends Model
         'designation',
         'joining_date',
         'salary',
+        'auto_generate_salary',
+        'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'joining_date'          => 'date',
+        'auto_generate_salary'  => 'boolean',
+        'salary'                => 'decimal:2',
     ];
 
     public function user()
@@ -29,5 +38,10 @@ class Employee extends Model
     public function organisation()
     {
         return $this->belongsTo(Organisation::class);
+    }
+
+    public function payrolls()
+    {
+        return $this->hasMany(Payroll::class);
     }
 }
