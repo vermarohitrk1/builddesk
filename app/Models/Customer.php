@@ -27,8 +27,14 @@ class Customer extends Model
         return $this->belongsTo(Organisation::class);
     }
 
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
+
     public function quotations()
     {
         return $this->hasMany(Quotation::class);
     }
 }
+

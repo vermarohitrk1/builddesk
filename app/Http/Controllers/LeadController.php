@@ -39,7 +39,7 @@ class LeadController extends Controller
         return DataTables::of($query)
             ->addColumn('contact', function ($lead) {
                 $url = route('leads.show', $lead->id);
-                return '<a href="' . $url . '" class="fw-bold text-dark text-decoration-none">' . $lead->contact_name . '</a><br><small>' . $lead->contact_mobile . '</small>';
+                return '<a href="' . $url . '" class="fw-bold text-decoration-none">' . $lead->contact_name . '</a><br><small>' . $lead->contact_mobile . '</small>';
             })
             ->editColumn('source', function ($lead) {
                 return '<span class="badge bg-secondary">' . ucfirst(str_replace('_', ' ', $lead->source)) . '</span>';
@@ -62,7 +62,8 @@ class LeadController extends Controller
                 return $lead->created_at->format('d M Y');
             })
             ->addColumn('actions', function ($lead) {
-                return '<button class="btn btn-sm btn-primary modal-trigger" data-url="' . route('leads.edit', $lead->id) . '" data-title="Edit Lead" data-size="modal-lg"><i class="fas fa-edit"></i> Edit</button>';
+                return '<button class="btn btn-sm btn-primary modal-trigger" data-url="' . route('leads.edit', $lead->id) . '" data-title="Edit Lead" data-size="modal-lg"><i class="fas fa-edit"></i> Edit</button>
+                <a class="btn btn-sm btn-outline-primary" href="' . route('leads.show', $lead->id) . '"><i class="fas fa-eye"></i> View</a>';
             })
             ->rawColumns(['contact', 'source', 'status', 'actions'])
             ->make(true);

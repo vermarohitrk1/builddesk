@@ -40,7 +40,7 @@
                 <a href="{{ route('quotations.index') }}"><i class="fas fa-file-invoice-dollar me-2"></i> Quotations</a>
             </li>
             <li class="{{ request()->is('customers*') ? 'active' : '' }}">
-                <a href="#"><i class="fas fa-users me-2"></i> Customers</a>
+                <a href="{{ route('customers.index') }}"><i class="fas fa-users me-2"></i> Customers</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link d-flex justify-content-between align-items-center"
@@ -67,6 +67,12 @@
                         <a href="{{ url('reports/expense') }}"
                         class="nav-link ps-5 {{ request()->is('reports/expense') ? 'active' : '' }}">
                             Expense Report
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ url('reports/financial-statement') }}"
+                        class="nav-link ps-5 {{ request()->is('reports/financial-statement') ? 'active' : '' }}">
+                            Financial Statement
                         </a>
                     </li>
                 </ul>

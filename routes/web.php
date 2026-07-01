@@ -26,6 +26,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\CustomerController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -112,6 +113,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/expenses/datatable', [ExpenseController::class, 'getExpensesData'])->name('expenses.datatable');
     Route::resource('expenses', ExpenseController::class);
     Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+
+    /**
+     * Customer Routes
+     */
+    Route::group(['prefix' => 'customers'], function () {
+        Route::get('/datatable', [CustomerController::class, 'getCustomersData'])->name('customers.datatable');
+    });
+    Route::resource('customers', CustomerController::class);
 
 });
 
