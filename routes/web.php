@@ -27,6 +27,7 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -121,6 +122,23 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/datatable', [CustomerController::class, 'getCustomersData'])->name('customers.datatable');
     });
     Route::resource('customers', CustomerController::class);
+
+    /**
+     * Reports Routes
+     */
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/revenue', [ReportController::class, 'revenue'])->name('revenue');
+        Route::get('/revenue/pdf', [ReportController::class, 'revenuePdf'])->name('revenue.pdf');
+        Route::get('/revenue/excel', [ReportController::class, 'revenueExcel'])->name('revenue.excel');
+
+        Route::get('/expense', [ReportController::class, 'expense'])->name('expense');
+        Route::get('/expense/pdf', [ReportController::class, 'expensePdf'])->name('expense.pdf');
+        Route::get('/expense/excel', [ReportController::class, 'expenseExcel'])->name('expense.excel');
+
+        Route::get('/financial-statement', [ReportController::class, 'cashFlow'])->name('cashflow');
+        Route::get('/financial-statement/pdf', [ReportController::class, 'cashFlowPdf'])->name('cashflow.pdf');
+        Route::get('/financial-statement/excel', [ReportController::class, 'cashFlowExcel'])->name('cashflow.excel');
+    });
 
 });
 
