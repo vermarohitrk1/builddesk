@@ -5,7 +5,7 @@
         @if(Auth::user()->organisation && Auth::user()->organisation->logo)
             <img src="{{ asset('storage/' . Auth::user()->organisation->logo) }}" class="logo-img" alt="Logo">
         @else
-            <h4 class="m-0">{{ config('app.name') }}</h4>
+            <img src="{{ asset('assets/images/logo.png') }}" class="logo-img" alt="Logo">
         @endif
         <div class="mt-2">
             <small class="text-white ">{{ Auth::user()->role === 'super_admin' ? 'System Admin' : (Auth::user()->organisation->name ?? '') }}</small>

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
+            $table->string('theme_color')->default('#fc720d');
             
             // Branding & Settings
             $table->text('terms_and_conditions')->nullable();

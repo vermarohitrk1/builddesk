@@ -138,16 +138,3 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .nav-tabs .nav-link {
-        color: #6c757d;
-        border-bottom: 2px solid transparent !important;
-    }
-    .nav-tabs .nav-link.active {
-        color: var(--bs-primary);
-        border-bottom: 2px solid var(--bs-primary) !important;
-        background: transparent;
-    }
-</style>
-@endpush

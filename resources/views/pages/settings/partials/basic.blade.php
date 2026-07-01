@@ -36,24 +36,27 @@
                 <div class="card-header bg-white border-bottom py-3">
                     <h5 class="mb-0 fw-bold">Organisation Info</h5>
                 </div>
-                <div class="card-body py-4">
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Name</label>
-                        <p class="mb-0 fs-5">{{ auth()->user()->organisation->name }}</p>
+                <form action="{{ route('settings.info.update') }}" method="POST" class="ajax-form">
+                    @csrf
+                    <div class="card-body py-4">
+                        <div class="mb-3">
+                            <label class="text-muted small fw-bold">Name</label>
+                            <p class="mb-0 fs-5">{{ auth()->user()->organisation->name }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small fw-bold">Email</label>
+                            <p class="mb-0">{{ auth()->user()->organisation->email ?? 'Not set' }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small fw-bold">Subscription Plan</label>
+                            <div><span class="badge bg-info text-dark px-3 py-2">{{ auth()->user()->organisation->subscriptionPlan->name ?? 'N/A' }}</span></div>
+                        </div>
+                        <hr>
+                        <div class="text-end">
+                            <button class="btn btn-outline-secondary disabled" title="">Update Details</button>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Email</label>
-                        <p class="mb-0">{{ auth()->user()->organisation->email ?? 'Not set' }}</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-muted small fw-bold">Subscription Plan</label>
-                        <div><span class="badge bg-info text-dark px-3 py-2">{{ auth()->user()->organisation->subscriptionPlan->name ?? 'N/A' }}</span></div>
-                    </div>
-                    <hr>
-                    <div class="text-end">
-                        <button class="btn btn-outline-secondary disabled" title="Global information synchronization is upcoming">Edit Details <i class="fas fa-clock ms-1"></i></button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

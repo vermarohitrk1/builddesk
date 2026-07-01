@@ -1,3 +1,78 @@
+/* Custom Text Color Utility Class */
+.btn-theme {
+    --bs-btn-bg: var(--bs-theme);
+    --bs-btn-border-color: var(--bs-theme);
+    --bs-btn-hover-bg: var(--bs-theme-hover);
+    --bs-btn-hover-border-color: var(--bs-theme-hover);
+    --bs-btn-active-bg: var(--bs-theme-active);
+    --bs-btn-active-border-color: var(--bs-theme-active);
+    --bs-btn-disabled-bg: var(--bs-theme);
+    --bs-btn-disabled-border-color: var(--bs-theme);
+}
+
+.btn-outline-theme {
+    --bs-btn-color: var(--bs-theme);
+    --bs-btn-border-color: var(--bs-theme);
+    --bs-btn-hover-bg: var(--bs-theme);
+    --bs-btn-hover-border-color: var(--bs-theme);
+    --bs-btn-active-bg: var(--bs-theme);
+    --bs-btn-active-border-color: var(--bs-theme);
+}
+
+.text-theme {
+    color: var(--bs-theme) !important;
+}
+
+.bg-theme {
+    background-color: var(--bs-theme) !important;
+}
+
+.text-theme {
+    color: var(--bs-theme) !important;
+}
+
+.btn-theme {
+    background-color: var(--bs-theme);
+    border-color: var(--bs-theme);
+    color: #ffffff;
+}
+
+.btn-theme:hover {
+    background-color: var(--bs-theme-hover);
+    border-color: var(--bs-theme-hover);
+    color: #ffffff;
+}
+
+.btn-theme:active {
+    background-color: var(--bs-theme-active);
+    border-color: var(--bs-theme-active);
+    color: #ffffff;
+}
+
+.list-group-item.active {
+    background-color: var(--bs-theme) !important;
+    border-color: var(--bs-theme) !important;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--bs-theme) !important;
+    border-bottom: 2px solid var(--bs-theme) !important;
+}
+
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border-bottom: 2px solid transparent !important;
+}
+
+/* .active>.page-link,
+.page-link.active {
+    color: #ffffff !important;
+    background-color: var(--bs-theme) !important;
+    border-color: var(--bs-theme) !important;
+} */
+
+/* Custom Background Utility Class End */
+
 * {
     border-radius: 0 !important;
 }
@@ -46,7 +121,7 @@ body {
     padding: 12px 25px;
     font-size: 0.95rem;
     display: block;
-    color: #adb5bd;
+    color: #adb5bd !important;
     text-decoration: none;
     border-left: 3px solid transparent;
 }
@@ -60,7 +135,7 @@ body {
 #sidebar ul li.active>a {
     color: #fff;
     background: #2c3136;
-    border-left-color: #0d6efd;
+    border-left-color: #fc720d;
     font-weight: 600;
 }
 
