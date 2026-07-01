@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('/settings/partial/basic', [SettingsController::class, 'getBasic'])->name('settings.basic');
     Route::get('/settings/partial/categories', [SettingsController::class, 'getExpenseCategories'])->name('settings.expense_categories');
+    Route::get('/settings/partial/suppliers', [SettingsController::class, 'getSuppliers'])->name('settings.suppliers');
     Route::post('/settings/logo', [SettingsController::class, 'updateOrganisationLogo'])->name('settings.logo.update');
 
     /**
@@ -118,7 +119,13 @@ Route::middleware(['auth'])->group(function () {
      */
     Route::get('/expenses/datatable', [ExpenseController::class, 'getExpensesData'])->name('expenses.datatable');
     Route::resource('expenses', ExpenseController::class);
-    Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+
+    /**
+     * Supplier Routes (managed from Settings)
+     */
+    Route::get('/suppliers/data', [SupplierController::class, 'getData'])->name('suppliers.data');
+    Route::get('/suppliers/create', [SupplierController::class, 'create'])->name('suppliers.create');
+    Route::resource('suppliers', SupplierController::class)->except(['index', 'show', 'create']);
 
     /**
      * Expense Category Routes (managed from Settings)

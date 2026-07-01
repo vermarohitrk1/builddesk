@@ -18,8 +18,13 @@ class ExpenseCategoryController extends Controller
 
         return DataTables::of($query)
             ->addColumn('action', function ($row) {
-                $editBtn = '<button onclick="editExpenseCategory(' . $row->id . ')" class="btn btn-sm btn-outline-primary me-1"><i class="fas fa-edit"></i></button>';
-                $deleteBtn = '<button onclick="deleteExpenseCategory(' . $row->id . ')" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>';
+                $editBtn = '<button class="btn btn-sm btn-link p-0 text-primary modal-trigger" data-url="' . route('expenses.categories.edit', $row->id) . '" data-title="Edit Expense Category"><i class="fas fa-edit"></i></button>';
+                $deleteBtn = '<a href="' . route('expenses.categories.destroy', $row->id) . '"
+                    class="btn btn-sm btn-link text-danger p-0 ajax-link"
+                    data-method="DELETE"
+                    data-confirm="Are you sure you want to delete this category?">
+                    <i class="fas fa-trash"></i>
+                </a>';
                 return $editBtn . $deleteBtn;
             })
             ->rawColumns(['action'])

@@ -842,4 +842,4 @@ class AjaxLibrary {
 }
 
 // Create global instance
-const appAjax = new AjaxLibrary();
+const Tihor = new AjaxLibrary();

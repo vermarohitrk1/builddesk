@@ -40,49 +40,4 @@
             }
         });
     });
-
-    function createExpenseCategory() {
-        $.get("{{ route('expenses.categories.create') }}", function(res) {
-            $('#ajax-modal .modal-content').html(res.html);
-            $('#ajax-modal').modal('show');
-        });
-    }
-
-    function editExpenseCategory(id) {
-        $.get("/expenses/categories/" + id + "/edit", function(res) {
-            $('#ajax-modal .modal-content').html(res.html);
-            $('#ajax-modal').modal('show');
-        });
-    }
-
-    function deleteExpenseCategory(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This category won't be deleted if it is linked to active expenses.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "/expenses/categories/" + id,
-                    type: "DELETE",
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(res) {
-                        if(res.status == 'success') {
-                            toastr.success(res.message);
-                            expenseCategoryTable.ajax.reload();
-                        } else {
-                            toastr.error(res.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error(xhr.responseJSON?.message || 'Error occurred deleting record.');
-                    }
-                });
-            }
-        });
-    }
 </script>

@@ -46,7 +46,7 @@
                         </button>
                     </div>
                 </div>
-
+                
                 <hr>
 
                 <form id="daily-attendance-form" style="display:none;">
@@ -114,7 +114,7 @@ $(document).ready(function() {
     $('#load-employees-btn').on('click', function() {
         const date = $('#attendance-date').val();
         if(!date) {
-            toastr.error('Please select an attendance date.');
+            Tihor.showError('Please select an attendance date.');
             return;
         }
 
@@ -130,7 +130,7 @@ $(document).ready(function() {
                     $('#daily-attendance-container').html(res.data.html);
                     $('#daily-attendance-form').slideDown();
                 } else {
-                    toastr.error(res.message);
+                    Tihor.showError(res.message);
                 }
             },
             complete: function() {
@@ -150,14 +150,14 @@ $(document).ready(function() {
             data: $(this).serialize(),
             success: function(res) {
                 if(res.status === 'success') {
-                    toastr.success(res.message);
+                    Tihor.showSuccess(res.message);
                 } else {
-                    toastr.error(res.message || 'Validation error');
+                    Tihor.showError(res.message || 'Validation error');
                 }
             },
             error: function(xhr) {
                 const res = xhr.responseJSON;
-                toastr.error(res?.message || 'Error occurred while saving attendance.');
+                Tihor.showError(res?.message || 'Error occurred while saving attendance.');
             },
             complete: function() {
                 $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Attendance');
@@ -171,19 +171,12 @@ $(document).ready(function() {
     
     // Lazy load the matrix when tab is clicked the first time
     $('button[data-bs-target="#attendance-records"]').on('shown.bs.tab', function (e) {
-        if(!matrixLoaded) {
-            loadMatrix();
-            matrixLoaded = true;
-        }
+        loadMatrix(); 
     });
 
     // Reload matrix when filters change
     $('#matrix-month, #matrix-year, #matrix-employee').on('change', function() {
-        if ($('#attendance-records').hasClass('active')) {
-            loadMatrix();
-        } else {
-            matrixLoaded = false; // Mark for reload next time tab is opened
-        }
+        loadMatrix();
     });
 
     function loadMatrix() {

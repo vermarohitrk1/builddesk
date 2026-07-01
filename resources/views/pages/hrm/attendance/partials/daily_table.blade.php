@@ -5,6 +5,11 @@
 @if($employees->isEmpty())
     <div class="alert alert-warning">No active employees found to mark attendance.</div>
 @else
+
+    @if(count($attendanceKeyed) > 0)
+        <div class="alert alert-success" id="attendance-success">Attendances is already taken for this date.</div>
+    @endif
+
     <table class="table table-bordered table-striped align-middle mb-0">
         <thead class="table-light">
             <tr>

@@ -24,6 +24,12 @@
                         <i class="fas fa-tags fa-fw me-2"></i> Expense Categories
                     </a>
 
+                    <a class="list-group-item list-group-item-action fw-bold py-3" 
+                       id="menu-suppliers" data-bs-toggle="list" href="#content-area" role="tab"
+                       onclick="loadSettingsTab('{{ route('settings.suppliers') }}')">
+                        <i class="fas fa-truck fa-fw me-2"></i> Suppliers
+                    </a>
+
                     <a class="list-group-item list-group-item-action text-muted py-3 disabled" role="tab">
                         <i class="fas fa-briefcase fa-fw me-2"></i> Business Configuration 
                         <br><small class="ms-4">(Coming Soon)</small>

@@ -24,6 +24,11 @@ class SettingsController extends Controller
         return view('pages.settings.partials.expense_categories');
     }
 
+    public function getSuppliers()
+    {
+        return view('pages.settings.partials.suppliers');
+    }
+
     public function updateOrganisationLogo(Request $request)
     {
         $request->validate([

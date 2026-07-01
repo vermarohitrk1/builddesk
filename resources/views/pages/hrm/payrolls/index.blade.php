@@ -248,7 +248,7 @@ $(document).ready(function () {
             success: function (res) {
                 if (res.status === 'success') {
                     bootstrap.Modal.getInstance(document.getElementById('payModal')).hide();
-                    toastr.success(res.message);
+                    Tihor.showSuccess(res.message);
                     table.ajax.reload();
                     selectedIds = [];
                     $('#mark-paid-btn').prop('disabled', true);
@@ -278,10 +278,10 @@ $(document).ready(function () {
             data: { _token: '{{ csrf_token() }}' },
             success: function (res) {
                 if (res.status === 'success') {
-                    toastr.success(res.message);
+                    Tihor.showSuccess(res.message);
                     table.ajax.reload();
                 } else {
-                    toastr.error(res.message);
+                    Tihor.showError(res.message);
                 }
             }
         });

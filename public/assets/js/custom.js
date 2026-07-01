@@ -278,10 +278,7 @@ $(document).ready(function () {
                     // Close the modal
                     $('#supplierModal').modal('hide');
 
-                    // Success toast if Toastr is available, or alert
-                    if (typeof toastr !== 'undefined') {
-                        toastr.success('Supplier added successfully!');
-                    }
+                    Tihor.showSuccess('Supplier added successfully!');
                 } else {
                     $('#supplier-errors').removeClass('d-none').html(response.message || 'Validation failed.');
                 }
