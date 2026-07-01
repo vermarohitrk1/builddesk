@@ -20,7 +20,24 @@ class PayrollController extends Controller
         $orgId = auth()->user()->organisation_id;
         $employees = Employee::where('organisation_id', $orgId)->with('user')->orderBy('id')->get();
 
-        return view('pages.hrm.payrolls.index', compact('employees'));
+        $lastMonthDate = Carbon::now()->subMonth();
+        $lastMonth = $lastMonthDate->month;
+        $lastYear = $lastMonthDate->year;
+
+        $employeesWithSalary = Payroll::where('organisation_id', $orgId)
+            ->where('payroll_type', 'salary')
+            ->where('payroll_month', $lastMonth)
+            ->where('payroll_year', $lastYear)
+            ->pluck('employee_id')
+            ->toArray();
+
+        // Get employees who don't have salary generated for last month
+        $missingSalaryEmployees = Employee::where('organisation_id', $orgId)
+            ->whereNotIn('id', $employeesWithSalary)
+            ->with('user')
+            ->get();
+
+        return view('pages.hrm.payrolls.index', compact('employees', 'missingSalaryEmployees', 'lastMonthDate'));
     }
 
     /**
@@ -100,8 +117,8 @@ class PayrollController extends Controller
     public function generate(Request $request)
     {
         $rules = [
-            'employee_ids'   => 'required|array|min:1',
-            'employee_ids.*' => 'exists:employees,id',
+            'employee_id'    => 'required|exists:employees,id',
+            'amount'         => 'required|numeric|min:0',
             'payroll_type'   => 'required|in:salary,bonus,incentive,advance,reimbursement,other',
             'payroll_month'  => 'required|integer|between:1,12',
             'payroll_year'   => 'required|integer|min:2020',
@@ -116,47 +133,36 @@ class PayrollController extends Controller
 
         $orgId = auth()->user()->organisation_id;
         $userId = auth()->id();
-        $generated = 0;
-        $skipped = 0;
 
-        foreach ($request->employee_ids as $empId) {
-            $employee = Employee::where('organisation_id', $orgId)->findOrFail($empId);
+        $empId = $request->employee_id;
+        $employee = Employee::where('organisation_id', $orgId)->findOrFail($empId);
 
-            // Duplicate check
-            $exists = Payroll::where('organisation_id', $orgId)
-                ->where('employee_id', $empId)
-                ->where('payroll_type', $request->payroll_type)
-                ->where('payroll_month', $request->payroll_month)
-                ->where('payroll_year', $request->payroll_year)
-                ->exists();
+        // Duplicate check
+        $exists = Payroll::where('organisation_id', $orgId)
+            ->where('employee_id', $empId)
+            ->where('payroll_type', $request->payroll_type)
+            ->where('payroll_month', $request->payroll_month)
+            ->where('payroll_year', $request->payroll_year)
+            ->exists();
 
-            if ($exists) {
-                $skipped++;
-                continue;
-            }
-
-            Payroll::create([
-                'organisation_id' => $orgId,
-                'employee_id'     => $empId,
-                'payroll_type'    => $request->payroll_type,
-                'payroll_month'   => $request->payroll_month,
-                'payroll_year'    => $request->payroll_year,
-                'payroll_date'    => $request->payroll_date,
-                'amount'          => $employee->salary,
-                'status'          => 'generated',
-                'remarks'         => $request->remarks,
-                'created_by'      => $userId,
-            ]);
-
-            $generated++;
+        if ($exists) {
+            return $this->ajaxResponse('error', 'A ' . $request->payroll_type . ' payroll record already exists for this employee for ' . Carbon::create()->month($request->payroll_month)->format('F') . ' ' . $request->payroll_year . '.');
         }
 
-        $message = "{$generated} payroll record(s) generated.";
-        if ($skipped > 0) {
-            $message .= " {$skipped} skipped (already exists).";
-        }
+        Payroll::create([
+            'organisation_id' => $orgId,
+            'employee_id'     => $empId,
+            'payroll_type'    => $request->payroll_type,
+            'payroll_month'   => $request->payroll_month,
+            'payroll_year'    => $request->payroll_year,
+            'payroll_date'    => $request->payroll_date,
+            'amount'          => $request->amount,
+            'status'          => 'generated',
+            'remarks'         => $request->remarks,
+            'created_by'      => $userId,
+        ]);
 
-        return $this->ajaxResponse('success', $message, [
+        return $this->ajaxResponse('success', 'Payroll record generated successfully.', [
             'close_modal'  => true,
             'reload_table' => 'payrolls-table',
         ]);

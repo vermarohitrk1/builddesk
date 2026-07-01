@@ -1,6 +1,19 @@
 @extends('layouts.main')
 
 @section('content')
+@if(isset($missingSalaryEmployees) && $missingSalaryEmployees->isNotEmpty())
+    <div class="alert alert-warning shadow-sm border-warning mb-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
+            <div>
+                <strong>Missing Salary Generation ({{ $lastMonthDate->format('F Y') }})</strong><br>
+                The following employees do not have a salary generated for last month:
+                <span class="fw-bold">{{ $missingSalaryEmployees->pluck('user.name')->join(', ') }}</span>
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="mb-4">
     <nav class="breadcrumb-container" aria-label="breadcrumb">
         <ol class="breadcrumb">

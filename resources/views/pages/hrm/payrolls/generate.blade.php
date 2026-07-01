@@ -1,33 +1,28 @@
 <form action="{{ route('payrolls.generate') }}" method="POST" class="ajax-form">
     @csrf
-    <div class="row mb-3">
-        <div class="col-12">
-            <label class="form-label fw-bold">Select Employees <span class="text-danger">*</span></label>
-            <div class="border rounded p-2" style="max-height: 200px; overflow-y:auto;">
+    <div class="row g-3">
+        <div class="col-md-7">
+            <label class="form-label fw-bold">Select Employee <span class="text-danger">*</span></label>
+            <select name="employee_id" id="generate_employee_id" class="form-select" required>
+                <option value="">-- Select Employee --</option>
                 @foreach($employees as $emp)
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="employee_ids[]" value="{{ $emp->id }}" id="emp-{{ $emp->id }}">
-                        <label class="form-check-label" for="emp-{{ $emp->id }}">
-                            {{ $emp->user->name }}
-                            <span class="text-muted small">({{ $emp->employee_code }})</span>
-                            <span class="text-success small ms-1">₹{{ number_format($emp->salary, 2) }}</span>
-                            @if($emp->auto_generate_salary)
-                                <span class="badge bg-info text-dark ms-1" style="font-size:0.65rem">Auto</span>
-                            @endif
-                        </label>
-                    </div>
+                    <option value="{{ $emp->id }}" data-salary="{{ $emp->salary }}">
+                        {{ $emp->user->name }} ({{ $emp->employee_code }})
+                    </option>
                 @endforeach
-            </div>
-            <div class="mt-1">
-                <button type="button" id="select-all-emps" class="btn btn-link btn-sm p-0">Select All</button> |
-                <button type="button" id="deselect-all-emps" class="btn btn-link btn-sm p-0">Deselect All</button>
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label fw-bold">Amount <span class="text-danger">*</span></label>
+            <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input type="number" name="amount" id="generate_amount" class="form-control" step="0.01" min="0" required>
             </div>
         </div>
-    </div>
-    <div class="row g-3">
+
         <div class="col-md-6">
             <label class="form-label fw-bold">Payroll Type <span class="text-danger">*</span></label>
-            <select name="payroll_type" class="form-select">
+            <select name="payroll_type" class="form-select" required>
                 @foreach(\App\Models\Payroll::TYPES as $type)
                     <option value="{{ $type }}">{{ ucfirst($type) }}</option>
                 @endforeach
@@ -35,7 +30,7 @@
         </div>
         <div class="col-md-3">
             <label class="form-label fw-bold">Month <span class="text-danger">*</span></label>
-            <select name="payroll_month" class="form-select">
+            <select name="payroll_month" class="form-select" required>
                 @foreach(range(1,12) as $m)
                     <option value="{{ $m }}" {{ $m == date('m') ? 'selected' : '' }}>
                         {{ \Carbon\Carbon::create()->month($m)->format('F') }}
@@ -45,7 +40,7 @@
         </div>
         <div class="col-md-3">
             <label class="form-label fw-bold">Year <span class="text-danger">*</span></label>
-            <select name="payroll_year" class="form-select">
+            <select name="payroll_year" class="form-select" required>
                 @foreach(range(date('Y'), 2024) as $y)
                     <option value="{{ $y }}" {{ $y == date('Y') ? 'selected' : '' }}>{{ $y }}</option>
                 @endforeach
@@ -67,10 +62,12 @@
 </form>
 
 <script>
-document.getElementById('select-all-emps')?.addEventListener('click', function () {
-    document.querySelectorAll('input[name="employee_ids[]"]').forEach(cb => cb.checked = true);
-});
-document.getElementById('deselect-all-emps')?.addEventListener('click', function () {
-    document.querySelectorAll('input[name="employee_ids[]"]').forEach(cb => cb.checked = false);
-});
+    $('#generate_employee_id').on('change', function() {
+        var salary = $(this).find(':selected').data('salary');
+        if(salary !== undefined) {
+            $('#generate_amount').val(salary);
+        } else {
+            $('#generate_amount').val('');
+        }
+    });
 </script>

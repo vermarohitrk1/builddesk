@@ -29,6 +29,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\AttendanceController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -152,6 +153,16 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/mark-paid', [PayrollController::class, 'markPaid'])->name('mark-paid');
         Route::post('/{id}/cancel', [PayrollController::class, 'cancel'])->name('cancel');
         Route::get('/export', [PayrollController::class, 'export'])->name('export');
+    });
+
+    /**
+     * Attendance Routes
+     */
+    Route::prefix('attendance')->name('attendance.')->group(function () {
+        Route::get('/', [AttendanceController::class, 'index'])->name('index');
+        Route::get('/daily', [AttendanceController::class, 'getDaily'])->name('daily.get');
+        Route::post('/daily', [AttendanceController::class, 'saveDaily'])->name('daily.save');
+        Route::get('/matrix', [AttendanceController::class, 'getMatrix'])->name('matrix.get');
     });
 
 });

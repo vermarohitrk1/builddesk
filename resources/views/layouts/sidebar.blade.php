@@ -107,6 +107,12 @@
                             Payroll
                         </a>
                     </li>
+                    <li>
+                        <a href="{{ route('attendance.index') }}"
+                            class="nav-link ps-5 {{ request()->is('attendance*') ? 'active' : '' }}">
+                            Attendance
+                        </a>
+                    </li>
                 </ul>
             </li>
         @endif
