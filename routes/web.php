@@ -182,9 +182,9 @@ Route::middleware(['auth'])->group(function () {
      */
     Route::prefix('attendance')->name('attendance.')->group(function () {
         Route::get('/', [AttendanceController::class, 'index'])->name('index');
-        Route::get('/daily', [AttendanceController::class, 'getDaily'])->name('daily.get');
-        Route::post('/daily', [AttendanceController::class, 'saveDaily'])->name('daily.save');
-        Route::get('/matrix', [AttendanceController::class, 'getMatrix'])->name('matrix.get');
+        Route::post('/get-daily', [AttendanceController::class, 'getDaily'])->name('daily.get');
+        Route::post('/store-daily', [AttendanceController::class, 'saveDaily'])->name('daily.store');
+        Route::post('/matrix', [AttendanceController::class, 'getMatrix'])->name('matrix.get');
     });
 
 });

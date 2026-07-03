@@ -1,5 +1,6 @@
 <form action="{{ route('employees.update', $employee->id) }}" method="POST" class="ajax-form">
     @csrf
+    @method('PUT')
     <div class="row">
         <div class="col-md-6 mb-3">
             <label class="form-label">Full Name</label>

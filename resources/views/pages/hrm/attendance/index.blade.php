@@ -41,17 +41,17 @@
                         <input type="date" id="attendance-date" class="form-control" value="{{ date('Y-m-d') }}">
                     </div>
                     <div class="col-md-auto">
-                        <button type="button" id="load-employees-btn" class="btn btn-primary">
+                        <a id="load-employees-btn" class="btn btn-primary ajax-link" href="{{ route('attendance.daily.get') }}" data-method="POST" data-data='@json(["date" => date("Y-m-d")])'>
                             <i class="fas fa-search me-1"></i> Load Employees
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
                 <hr>
 
-                <form id="daily-attendance-form" style="display:none;">
+                <form id="daily-attendance-form" class="ajax-form" action="{{ route('attendance.daily.store') }}" method="POST" style="display:none;">
                     @csrf
-                    <input type="hidden" name="attendance_date" id="form-attendance-date">
+                    <input type="hidden" name="attendance_date" id="form-attendance-date" value="{{ date('Y-m-d') }}">
                     
                     <div id="daily-attendance-container" class="table-responsive">
                         <!-- Loaded via AJAX -->
@@ -67,10 +67,11 @@
 
             {{-- Tab 2: Attendance Records (Matrix) --}}
             <div class="tab-pane fade" id="attendance-records" role="tabpanel">
-                <form id="matrix-filter-form" class="row g-3 mb-4">
+                <form id="matrix-filter-form" class="ajax-form row g-3 mb-4" action="{{ route('attendance.matrix.get') }}" method="POST">
+                    @csrf
                     <div class="col-md-3">
                         <label class="form-label small text-muted">Month</label>
-                        <select id="matrix-month" class="form-select form-select-sm">
+                        <select id="matrix-month" name="month" class="form-select form-select-sm">
                             @foreach(range(1,12) as $m)
                                 <option value="{{ $m }}" {{ $m == date('n') ? 'selected' : '' }}>
                                     {{ \Carbon\Carbon::create()->month($m)->format('F') }}
@@ -80,7 +81,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small text-muted">Year</label>
-                        <select id="matrix-year" class="form-select form-select-sm">
+                        <select id="matrix-year" name="year" class="form-select form-select-sm">
                             @foreach(range(date('Y'), 2024) as $y)
                                 <option value="{{ $y }}" {{ $y == date('Y') ? 'selected' : '' }}>{{ $y }}</option>
                             @endforeach
@@ -88,7 +89,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label small text-muted">Employee (Optional)</label>
-                        <select id="matrix-employee" class="form-select form-select-sm">
+                        <select id="matrix-employee" name="employee_id" class="form-select form-select-sm">
                             <option value="">All Employees</option>
                             @foreach($employees as $emp)
                                 <option value="{{ $emp->id }}">{{ $emp->user->name }}</option>
@@ -99,6 +100,7 @@
 
                 <div id="matrix-container" class="table-responsive">
                     <!-- Matrix will be loaded via AJAX on tab click or filter change -->
+                     <div class="text-center p-4"><i class="fas fa-circle-notch fa-spin fa-2x text-primary"></i><p class="mt-2">Loading matrix...</p></div>
                 </div>
             </div>
 
@@ -108,66 +110,13 @@
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    
-    // --- TAB 1: Daily Attendance ---
-    $('#load-employees-btn').on('click', function() {
-        const date = $('#attendance-date').val();
-        if(!date) {
-            Tihor.showError('Please select an attendance date.');
-            return;
-        }
-
-        const $btn = $(this);
-        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Loading...');
-
-        $.ajax({
-            url: '{{ route('attendance.daily.get') }}',
-            data: { date: date },
-            success: function(res) {
-                if(res.status === 'success') {
-                    $('#form-attendance-date').val(date);
-                    $('#daily-attendance-container').html(res.data.html);
-                    $('#daily-attendance-form').slideDown();
-                } else {
-                    Tihor.showError(res.message);
-                }
-            },
-            complete: function() {
-                $btn.prop('disabled', false).html('<i class="fas fa-search me-1"></i> Load Employees');
-            }
-        });
+    $(document).on('change', '#attendance-date', function () {
+        const date = $(this).val();
+        $('#load-employees-btn').attr('data-data', JSON.stringify({
+            date: date
+        }));
+        $('#form-attendance-date').val(date);
     });
-
-    $('#daily-attendance-form').on('submit', function(e) {
-        e.preventDefault();
-        const $btn = $('#save-attendance-btn');
-        $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
-
-        $.ajax({
-            url: '{{ route('attendance.daily.save') }}',
-            method: 'POST',
-            data: $(this).serialize(),
-            success: function(res) {
-                if(res.status === 'success') {
-                    Tihor.showSuccess(res.message);
-                } else {
-                    Tihor.showError(res.message || 'Validation error');
-                }
-            },
-            error: function(xhr) {
-                const res = xhr.responseJSON;
-                Tihor.showError(res?.message || 'Error occurred while saving attendance.');
-            },
-            complete: function() {
-                $btn.prop('disabled', false).html('<i class="fas fa-save me-1"></i> Save Attendance');
-            }
-        });
-    });
-
-
-    // --- TAB 2: Matrix Records ---
-    let matrixLoaded = false;
     
     // Lazy load the matrix when tab is clicked the first time
     $('button[data-bs-target="#attendance-records"]').on('shown.bs.tab', function (e) {
@@ -180,29 +129,8 @@ $(document).ready(function() {
     });
 
     function loadMatrix() {
-        const month = $('#matrix-month').val();
-        const year = $('#matrix-year').val();
-        const employeeId = $('#matrix-employee').val();
-        
-        $('#matrix-container').html('<div class="text-center p-4"><i class="fas fa-circle-notch fa-spin fa-2x text-primary"></i><p class="mt-2">Loading matrix...</p></div>');
-
-        $.ajax({
-            url: '{{ route('attendance.matrix.get') }}',
-            data: { month: month, year: year, employee_id: employeeId },
-            success: function(res) {
-                if(res.status === 'success') {
-                    $('#matrix-container').html(res.data.html);
-                } else {
-                    $('#matrix-container').html('<div class="alert alert-danger">Error loading matrix: ' + res.message + '</div>');
-                }
-            },
-            error: function() {
-                $('#matrix-container').html('<div class="alert alert-danger">Failed to connect to the server.</div>');
-            }
-        });
+        document.getElementById('matrix-filter-form').requestSubmit();
     }
-
-});
 </script>
 @endpush
 @endsection

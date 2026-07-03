@@ -28,3 +28,8 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+# AI Instructions
+AGENTS.md
+implementation_plan.md
+docs

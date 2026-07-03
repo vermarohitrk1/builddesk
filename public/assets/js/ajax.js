@@ -168,6 +168,7 @@ class AjaxLibrary {
             const response = await this.request(method, url, data);
             await this.handleResponse(response, link);
         } catch (error) {
+            console.log(error);
             this.showError('Action failed. Please try again.');
         } finally {
             this.setLoadingState(link, false);
@@ -771,6 +772,12 @@ class AjaxLibrary {
                         break;
                     case 'addClass':
                         element.classList.add(html);
+                        break;
+                    case 'show':
+                        element.style.display = 'block';
+                        break;
+                    case 'hide':
+                        element.style.display = 'none';
                         break;
                     default:
                         element.innerHTML = html;

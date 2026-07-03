@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
-use App\Services\EmployeeService;
+use App\Repositories\EmployeeRepository;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 
 class EmployeeController extends Controller
 {
-    protected EmployeeService $employeeService;
+    protected EmployeeRepository $employeeRepository;
 
-    public function __construct(EmployeeService $employeeService)
+    public function __construct(EmployeeRepository $employeeRepository)
     {
-        $this->employeeService = $employeeService;
+        $this->employeeRepository = $employeeRepository;
     }
 
     public function index()
@@ -70,7 +70,7 @@ class EmployeeController extends Controller
 
         $validated = $validator->validated();
         
-        $this->employeeService->createEmployee($validated);
+        $this->employeeRepository->createEmployee($validated);
 
         return $this->ajaxResponse('success', 'Employee registered successfully!', [
             'close_modal' => true,
@@ -114,7 +114,7 @@ class EmployeeController extends Controller
 
         $validated = $validator->validated();
         
-        $this->employeeService->updateEmployee($employee, $validated);
+        $this->employeeRepository->updateEmployee($employee, $validated);
 
         return $this->ajaxResponse('success', 'Employee updated successfully!', [
             'close_modal' => true,
@@ -127,7 +127,7 @@ class EmployeeController extends Controller
         $orgId = auth()->user()->organisation_id;
         $employee = Employee::where('organisation_id', $orgId)->findOrFail($id);
         
-        $this->employeeService->deleteEmployee($employee);
+        $this->employeeRepository->deleteEmployee($employee);
 
         return $this->ajaxResponse('success', 'Employee deleted successfully!', [
             'reload_table' => 'employees-table',

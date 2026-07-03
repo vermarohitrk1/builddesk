@@ -27,10 +27,6 @@
     background-color: var(--bs-theme) !important;
 }
 
-.text-theme {
-    color: var(--bs-theme) !important;
-}
-
 .btn-theme {
     background-color: var(--bs-theme);
     border-color: var(--bs-theme);

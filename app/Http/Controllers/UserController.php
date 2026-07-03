@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\UserService;
+use App\Repositories\UserRepository;
 use App\Models\Organisation;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    protected UserService $userService;
+    protected UserRepository $userRepository;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userService = $userService;
+        $this->userRepository = $userRepository;
     }
 
     public function index()
@@ -58,7 +58,7 @@ class UserController extends Controller
         $validated = $validator->validated();
         $validated['password'] = bcrypt($validated['password']);
 
-        $this->userService->create($validated);
+        $this->userRepository->create($validated);
 
         return $this->ajaxResponse('success', 'User created successfully!', [
         ]);

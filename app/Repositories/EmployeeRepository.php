@@ -1,16 +1,49 @@
 <?php
 
-namespace App\Services;
+/** --------------------------------------------------------------------------------
+ * This repository class manages all the data abstraction for employees
+ *
+ * @package    BuildDesk
+ * @author     Rohit
+ *----------------------------------------------------------------------------------*/
 
-use App\Repositories\Interfaces\EmployeeRepositoryInterface;
+namespace App\Repositories;
+
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class EmployeeService extends BaseService
+class EmployeeRepository
 {
-    public function __construct(EmployeeRepositoryInterface $repository)
+    /**
+     * The employee model instance.
+     */
+    protected $employee;
+
+    public function __construct(Employee $employee)
     {
-        parent::__construct($repository);
+        $this->employee = $employee;
+    }
+
+    /**
+     * get all rows
+     * @param int|null $id the id of the row
+     * @return object
+     */
+    public function rows($id = null)
+    {
+        $query = $this->employee->newQuery();
+
+        if ($id) {
+            $query->where('id', $id);
+        }
+
+        // filter by organisation
+        if (request()->filled('filter_organisation_id')) {
+            $query->where('organisation_id', request('filter_organisation_id'));
+        }
+
+        return $query;
     }
 
     public function createEmployee(array $data)
@@ -26,7 +59,7 @@ class EmployeeService extends BaseService
             ]);
 
             // 2. Create Employee Profile
-            return $this->repository->create([
+            return $this->employee->create([
                 'user_id'               => $user->id,
                 'employee_code'         => $data['employee_code'],
                 'designation'           => $data['designation'] ?? null,

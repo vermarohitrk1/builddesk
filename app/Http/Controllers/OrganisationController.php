@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Services\OrganisationService;
+use App\Repositories\OrganisationRepository;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 
 class OrganisationController extends Controller
 {
-    protected OrganisationService $organisationService;
+    protected OrganisationRepository $organisationRepository;
 
-    public function __construct(OrganisationService $organisationService)
+    public function __construct(OrganisationRepository $organisationRepository)
     {
-        $this->organisationService = $organisationService;
+        $this->organisationRepository = $organisationRepository;
     }
 
     public function index()
@@ -61,14 +61,14 @@ class OrganisationController extends Controller
             return $this->validationResponse($validator);
         }
 
-        $this->organisationService->create($validator->validated());
+        $this->organisationRepository->create($validator->validated());
 
         return $this->ajaxResponse('success', 'Organisation created successfully!', []);
     }
 
     public function edit($id)
     {
-        $organisation = $this->organisationService->getById($id);
+        $organisation = $this->organisationRepository->getById($id);
         $html = view('pages.organisations.edit', compact('organisation'))->render();
         return response()->json(['status' => 'success', 'data' => ['html' => $html, 'title' => 'Edit Organisation']]);
     }
@@ -85,7 +85,7 @@ class OrganisationController extends Controller
             return $this->validationResponse($validator);
         }
 
-        $this->organisationService->update($id, $validator->validated());
+        $this->organisationRepository->update($id, $validator->validated());
 
         return $this->ajaxResponse('success', 'Organisation updated successfully!', []);
     }

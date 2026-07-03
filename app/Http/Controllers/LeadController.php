@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\Lead;
-use App\Services\LeadService;
+use App\Repositories\LeadRepository;
 use Yajra\DataTables\Facades\DataTables;
 
 class LeadController extends Controller
 {
-    protected LeadService $leadService;
+    protected LeadRepository $leadRepository;
 
-    public function __construct(LeadService $leadService)
+    public function __construct(LeadRepository $leadRepository)
     {
-        $this->leadService = $leadService;
+        $this->leadRepository = $leadRepository;
     }
 
     public function index()
@@ -25,16 +24,19 @@ class LeadController extends Controller
     public function show($id)
     {
         $orgId = auth()->user()->organisation_id;
-        $lead = Lead::where('organisation_id', $orgId)
-            ->with(['measurements', 'measurements.items', 'quotations', 'quotations.items', 'followups', 'customer', 'project', 'project.createdBy'])
-            ->findOrFail($id);
+        request()->merge(['filter_organisation_id' => $orgId]);
+
+        $lead = $this->leadRepository->rows($id)->first();
         
         return view('pages.leads.show', compact('lead'));
     }
 
     public function getLeadsData()
     {
-        $query = Lead::query();
+        $orgId = auth()->user()->organisation_id;
+        request()->merge(['filter_organisation_id' => $orgId]);
+        
+        $query = $this->leadRepository->rows();
 
         return DataTables::of($query)
             ->addColumn('contact', function ($lead) {
@@ -79,7 +81,7 @@ class LeadController extends Controller
         ]);
     }
 
-    public function store(\Illuminate\Http\Request $request)
+    public function store(Request $request)
     {
         $orgId = auth()->user()->organisation_id;
 
@@ -109,7 +111,7 @@ class LeadController extends Controller
             'status' => 'new',
         ]);
         
-        $this->leadService->create($data);
+        $this->leadRepository->create($data);
 
         return $this->ajaxResponse('success', 'Lead created successfully!', [
             'close_modal' => true,
@@ -117,44 +119,12 @@ class LeadController extends Controller
         ]);
     }
 
-    public function checkMobile(\Illuminate\Http\Request $request)
-    {
-        $mobile = $request->mobile;
-        $orgId = auth()->user()->organisation_id;
-
-        // 1. Check existing leads
-        $lead = Lead::where('organisation_id', $orgId)
-                    ->where('contact_mobile', $mobile)
-                    ->first();
-        
-        if ($lead) {
-            return response()->json([
-                'status' => 'exists',
-                'lead_id' => $lead->id,
-                'message' => 'An active lead already exists for this mobile number.'
-            ]);
-        }
-
-        // 2. Check existing customers
-        $customer = \App\Models\Customer::where('organisation_id', $orgId)
-                        ->where('phone', $mobile)
-                        ->first();
-
-        if ($customer) {
-            return response()->json([
-                'status' => 'exists',
-                'customer_id' => $customer->id,
-                'message' => 'This mobile number is registered to an existing customer.'
-            ]);
-        }
-
-        return response()->json(['status' => 'new']);
-    }
-
     public function edit($id)
     {
         $orgId = auth()->user()->organisation_id;
-        $lead = Lead::where('organisation_id', $orgId)->findOrFail($id);
+        request()->merge(['filter_organisation_id' => $orgId]);
+
+        $lead = $this->leadRepository->rows($id)->first();
         
         $html = view('pages.leads.edit', compact('lead'))->render();
         
@@ -164,10 +134,12 @@ class LeadController extends Controller
         ]);
     }
 
-    public function update(\Illuminate\Http\Request $request, $id)
+    public function update(Request $request, $id)
     {
         $orgId = auth()->user()->organisation_id;
-        $lead = Lead::where('organisation_id', $orgId)->findOrFail($id);
+        request()->merge(['filter_organisation_id' => $orgId]);
+
+        $lead = $this->leadRepository->rows($id)->first();
 
         $rules = [
             'contact_name' => 'required|string|max:255',
@@ -194,11 +166,46 @@ class LeadController extends Controller
             'notes' => $request->notes,
         ]);
         
-        $this->leadService->update($id, $data);
+        $this->leadRepository->update($id, $data);
 
         return $this->ajaxResponse('success', 'Lead updated successfully!', [
             'close_modal' => true,
             'reload_table' => 'leads-table'
         ]);
     }
+
+
+    public function checkMobile(Request $request)
+    {
+        $mobile = $request->mobile;
+        $orgId = auth()->user()->organisation_id;
+        request()->merge(['filter_organisation_id' => $orgId]);
+
+        // 1. Check existing leads
+        $lead = $this->leadRepository->rows()->where('contact_mobile', $mobile)->first();
+        
+        if ($lead) {
+            return response()->json([
+                'status' => 'exists',
+                'lead_id' => $lead->id,
+                'message' => 'An active lead already exists for this mobile number.'
+            ]);
+        }
+
+        // 2. Check existing customers
+        $customer = \App\Models\Customer::where('organisation_id', $orgId)
+                        ->where('phone', $mobile)
+                        ->first();
+
+        if ($customer) {
+            return response()->json([
+                'status' => 'exists',
+                'customer_id' => $customer->id,
+                'message' => 'This mobile number is registered to an existing customer.'
+            ]);
+        }
+
+        return response()->json(['status' => 'new']);
+    }
+
 }

@@ -33,11 +33,11 @@
             <li class="{{ request()->is('leads*') ? 'active' : '' }}">
                 <a href="{{ route('leads.index') }}"><i class="fas fa-user-tie me-2"></i> Leads</a>
             </li>
-            <li class="{{ request()->is('projects*') ? 'active' : '' }}">
-                <a href="{{ route('projects.index') }}"><i class="fas fa-project-diagram me-2"></i> Projects</a>
-            </li>
             <li class="{{ request()->is('quotations*') ? 'active' : '' }}">
                 <a href="{{ route('quotations.index') }}"><i class="fas fa-file-invoice-dollar me-2"></i> Quotations</a>
+            </li>
+            <li class="{{ request()->is('projects*') ? 'active' : '' }}">
+                <a href="{{ route('projects.index') }}"><i class="fas fa-project-diagram me-2"></i> Projects</a>
             </li>
             <li class="{{ request()->is('customers*') ? 'active' : '' }}">
                 <a href="{{ route('customers.index') }}"><i class="fas fa-users me-2"></i> Customers</a>
@@ -102,15 +102,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('payrolls.index') }}"
-                            class="nav-link ps-5 {{ request()->is('payrolls*') ? 'active' : '' }}">
-                            Payroll
-                        </a>
-                    </li>
-                    <li>
                         <a href="{{ route('attendance.index') }}"
                             class="nav-link ps-5 {{ request()->is('attendance*') ? 'active' : '' }}">
                             Attendance
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('payrolls.index') }}"
+                            class="nav-link ps-5 {{ request()->is('payrolls*') ? 'active' : '' }}">
+                            Payroll
                         </a>
                     </li>
                 </ul>

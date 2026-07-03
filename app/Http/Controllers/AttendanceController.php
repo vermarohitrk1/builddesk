@@ -25,7 +25,13 @@ class AttendanceController extends Controller
      */
     public function getDaily(Request $request)
     {
-        $request->validate(['date' => 'required|date']);
+        $rules = ['date' => 'required|date'];
+
+        $validator = \Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return $this->validationResponse($validator);
+        }
         
         $orgId = auth()->user()->organisation_id;
         $targetDate = Carbon::parse($request->date)->format('Y-m-d');
@@ -44,7 +50,9 @@ class AttendanceController extends Controller
 
         $html = view('pages.hrm.attendance.partials.daily_table', compact('employees', 'attendances', 'targetDate'))->render();
 
-        return $this->ajaxResponse('success', '', ['html' => $html]);
+        return $this->ajaxResponse('success', '', [
+            'update' => ['#daily-attendance-container' => ['action' => 'replace', 'html' => $html], '#daily-attendance-form' => ['action' => 'show']]
+        ]);
     }
 
     /**
@@ -81,7 +89,7 @@ class AttendanceController extends Controller
             );
         }
 
-        return $this->ajaxResponse('success', 'Attendance for ' . Carbon::parse($targetDate)->format('d M Y') . ' saved successfully.');
+        return $this->ajaxResponse('success', 'Attendance for ' . Carbon::parse($targetDate)->format('d M Y') . ' saved successfully.', ['reset_form' => false]);
     }
 
     /**
@@ -145,6 +153,8 @@ class AttendanceController extends Controller
 
         $html = view('pages.hrm.attendance.partials.matrix_table', compact('employees', 'daysInMonth', 'matrix', 'summary', 'month', 'year'))->render();
 
-        return $this->ajaxResponse('success', '', ['html' => $html]);
+        return $this->ajaxResponse('success', '', 
+                ['update' => ['#matrix-container' => ['action' => 'replace', 'html' => $html]],
+                'reset_form' => false]);
     }
 }
