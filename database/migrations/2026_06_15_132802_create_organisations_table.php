@@ -14,9 +14,15 @@ return new class extends Migration
         Schema::create('organisations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('contact_person')->nullable();
+            
             $table->string('logo')->nullable();
             $table->string('gst_number')->nullable();
+            
             $table->text('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
@@ -31,7 +37,7 @@ return new class extends Migration
             $table->foreignId('subscription_plan_id')->nullable()->constrained('subscription_plans');
             $table->date('subscription_start_date')->nullable();
             $table->date('subscription_end_date')->nullable();
-            $table->enum('active_status', ['active', 'suspended', 'expired'])->default('active');
+            $table->enum('active_status', ['active', 'suspended', 'trial'])->default('active');
             
             $table->timestamps();
             $table->softDeletes();

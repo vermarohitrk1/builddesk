@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 
 use App\Models\Organisation;
 use App\Models\User;
+use App\Models\SuperAdmin;
 use App\Models\SubscriptionPlan;
 
 class DatabaseSeeder extends Seeder
@@ -32,11 +33,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 3. Create Super Admin (no organisation_id if they are global, or linked to a system org)
-        User::create([
+        SuperAdmin::create([
             'name' => 'Super Admin',
-            'email' => 'sadmin@gmail.com',
+            'email' => 'admin@gmail.com',
             'password' => bcrypt('123456'),
-            'role' => 'super_admin',
         ]);
 
         // 4. Create Organisation Admin

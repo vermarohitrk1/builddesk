@@ -32,6 +32,12 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ExpenseCategoryController;
 
+
+/**
+ * --------------------------------------------
+ * Tenant Routes
+ * --------------------------------------------
+ */
 Route::get('/', function () {
     return redirect()->route('login');
 });
@@ -41,16 +47,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-
-    /**
-     * Organisation Routes
-     */
-    Route::group(['prefix' => 'organisations'], function () {
-        Route::get('/datatable', [OrganisationController::class, 'getOrganisationsData'])->name('organisations.datatable');
-    });
-    Route::resource('organisations', OrganisationController::class);
-    Route::get('/impersonate/{id}', [TenantController::class, 'impersonate'])->name('tenant.impersonate');
-    Route::get('/stop-impersonation', [TenantController::class, 'stopImpersonation'])->name('tenant.stop-impersonation');
 
     /**
      * Employee Routes
@@ -189,3 +185,51 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+
+/**
+ * --------------------------------------------
+ * Super Admin Routes
+ * --------------------------------------------
+ */
+use App\Http\Middleware\SuperAdminAuthenticate;
+use App\Http\Controllers\Admin\AuthController as AdminAuthController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
+    Route::middleware([SuperAdminAuthenticate::class])->group(function () {
+        Route::get('/', [AdminDashboardController::class, 'index']);
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        
+        // Let Super Admin assume control of an organisation
+        Route::get('/impersonate/{id}', [\App\Http\Controllers\TenantController::class, 'impersonate'])->name('impersonate');
+        Route::get('/stop-impersonation', [\App\Http\Controllers\TenantController::class, 'stopImpersonation'])->name('stop-impersonation');
+
+
+        //Organisation Routes
+        Route::group(['prefix' => 'organisations'], function () {
+            Route::get('/datatable', [OrganisationController::class, 'getOrganisationsData'])->name('organisations.datatable');
+        });
+        Route::resource('organisations', OrganisationController::class);
+
+        //Settings Routes
+        Route::group(['prefix' => 'settings'], function () {
+            Route::get('/datatable', [SettingController::class, 'getSettingsData'])->name('settings.datatable');
+        });
+        Route::resource('settings', SettingController::class);
+    });
+});
+
+
+
+/**
+ * -----------------------------------------------
+ * Dual Guard Routes (Web + Super Admin)
+ * -----------------------------------------------
+ */
+Route::middleware(['auth:web,super_admin'])->group(function () {
+    //
+});

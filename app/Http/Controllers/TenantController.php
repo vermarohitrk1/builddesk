@@ -10,7 +10,7 @@ class TenantController extends Controller
 {
     public function impersonate($id)
     {
-        if (Auth::user()->role !== 'super_admin') {
+        if (!Auth::guard('super_admin')->check()) {
             abort(403);
         }
 
@@ -25,30 +25,14 @@ class TenantController extends Controller
             return redirect()->back()->with('error', 'This organisation has no active admin account.');
         }
 
-        // Store original SA ID in session
-        $saId = Auth::id();
-        
-        Auth::login($oa);
-        
-        session(['impersonated_by' => $saId]);
+        Auth::guard('web')->login($oa);
 
-        return redirect()->intended('/dashboard')->with('success', 'Logged in as ' . $organisation->name . ' Admin');
+        return redirect('/dashboard')->with('success', 'Logged in as ' . $organisation->name . ' Admin');
     }
 
     public function stopImpersonation()
     {
-        if (!session()->has('impersonated_by')) {
-            return redirect('/dashboard');
-        }
-
-        $saId = session()->pull('impersonated_by');
-        $sa = \App\Models\User::find($saId);
-
-        if ($sa) {
-            Auth::login($sa);
-            return redirect()->route('organisations.index')->with('success', 'Returned to Super Admin panel');
-        }
-
-        return redirect('/login')->with('success', 'Session expired');
+        Auth::guard('web')->logout();
+        return redirect()->route('admin.dashboard')->with('success', 'Returned to Super Admin panel');
     }
 }

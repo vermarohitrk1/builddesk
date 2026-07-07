@@ -19,6 +19,7 @@
             --bs-theme-active: {{ App\Helpers\BrandingHelper::getBranding()['theme_color_active'] }};
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
     @stack('styles')
 
@@ -28,6 +29,11 @@
     </script>
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('sidebar-collapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+        }
+    </script>
     <div id="wrapper">
         <!-- Sidebar -->
         @include('layouts.sidebar')
@@ -37,21 +43,28 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-white mb-4">
                 <div class="container-fluid">
                     <div class="d-flex align-items-center">
-                        <span class="navbar-text me-3">
-                            Welcome, <strong>{{ Auth::user()->name ?? 'Guest' }}</strong>
-                        </span>
-
-                        @if(session()->has('impersonated_by'))
-                            <div class="alert alert-warning py-1 px-3 m-0 d-flex align-items-center">
-                                <i class="fas fa-user-secret me-2"></i>
-                                Impersonating: {{ Auth::user()->organisation->name }}
-                                <a href="{{ route('tenant.stop-impersonation') }}" class="btn btn-sm btn-danger ms-3">
-                                    Return to Admin
-                                </a>
-                            </div>
-                        @elseif(Auth::user()->role === 'super_admin')
-                            <span class="badge bg-dark">SYSTEM ADMIN</span>
+                        <button id="sidebarToggle" class="btn btn-sm btn-light border-0 me-3">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        @if(Auth::guard('super_admin')->check())
+                            <span class="navbar-text me-3">
+                                Welcome, <strong>{{ Auth::guard('super_admin')->user()->name ?? 'Guest' }}</strong>
+                            </span>
+                            @if(Auth::guard('web')->check())
+                                <div class="alert alert-warning py-1 px-3 m-0 d-flex align-items-center">
+                                    <i class="fas fa-user-secret me-2"></i>
+                                    Impersonating: {{ Auth::user()->organisation->name }}
+                                    <a href="{{ route('admin.stop-impersonation') }}" class="btn btn-sm btn-danger ms-3">
+                                        Return to Admin
+                                    </a>
+                                </div>
+                            @endif
                         @else
+
+                            <span class="navbar-text me-3">
+                                Welcome, <strong>{{ Auth::user()->name ?? 'Guest' }}</strong>
+                            </span>
+
                             <span class="badge bg-secondary">
                                 {{ Auth::user()->organisation->name ?? 'No Organisation' }}
                             </span>

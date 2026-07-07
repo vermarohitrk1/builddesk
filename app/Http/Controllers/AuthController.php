@@ -25,25 +25,9 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            // return response()->json([
-            //     'status' => 'success',
-            //     'message' => 'Login successful',
-            //     'data' => [
-            //         'redirect' => '/dashboard',
-            //         'redirect_delay' => 500
-            //     ]
-            // ]);
             return redirect()->intended('/dashboard');
         }
 
-        // return response()->json([
-        //     'status' => 'error',
-        //     'message' => 'The provided credentials do not match our records.',
-        //     'data' => [
-        //         'errors' => ['email' => 'Invalid credentials']
-        //     ]
-        // ], 422);
         return redirect()->back()->with('error', 'Invalid credentials');
     }
 

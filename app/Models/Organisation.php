@@ -12,9 +12,13 @@ class Organisation extends Model
 
     protected $fillable = [
         'name',
+        'contact_person',
         'logo',
         'gst_number',
         'address',
+        'city',
+        'state',
+        'country',
         'phone',
         'email',
         'website',
@@ -25,6 +29,7 @@ class Organisation extends Model
         'subscription_start_date',
         'subscription_end_date',
         'active_status',
+        'payment_status',
     ];
 
     protected $casts = [

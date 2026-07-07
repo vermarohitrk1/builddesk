@@ -1,6 +1,23 @@
-
 $(document).ready(function () {
     let checkTimeout = null;
+
+    $(document).on('click', '#sidebarToggle', function (e) {
+        e.stopPropagation();
+        if ($(window).width() < 768) {
+            $('body').toggleClass('sidebar-mobile-show');
+        } else {
+            $('body').toggleClass('sidebar-collapsed');
+            localStorage.setItem('sidebar-collapsed', $('body').hasClass('sidebar-collapsed'));
+        }
+    });
+
+    $(document).on('click', function (e) {
+        if ($(window).width() < 768 && $('body').hasClass('sidebar-mobile-show')) {
+            if (!$(e.target).closest('#sidebar').length) {
+                $('body').removeClass('sidebar-mobile-show');
+            }
+        }
+    });
 
     $(document).on('input', '#contact_mobile', function () {
         const mobile = $(this).val();

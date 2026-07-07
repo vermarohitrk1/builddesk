@@ -1,0 +1,295 @@
+/* ----------------------------------------------------------------------------------
+   App UI Foundation Styles
+   Standardized layout, spacing, components and utilities
+-----------------------------------------------------------------------------------*/
+
+/* --- SPACING UTILITIES --- */
+.gap-1 {
+    gap: 0.25rem !important;
+}
+
+.gap-2 {
+    gap: 0.5rem !important;
+}
+
+.gap-3 {
+    gap: 1rem !important;
+}
+
+.gap-4 {
+    gap: 1.5rem !important;
+}
+
+.section-spacing {
+    margin-bottom: 2rem !important;
+}
+
+.card-spacing {
+    margin-bottom: 1.5rem !important;
+}
+
+/* --- TYPOGRAPHY & VISUALS --- */
+body {
+    color: #334155;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
+    color: #0f172a;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+}
+
+/* --- CARDS & PANELS --- */
+.card-header {
+    background-color: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+}
+
+/* --- BADGES (STATUSES) --- */
+.badge-status-active,
+.badge-status-completed,
+.badge-status-success {
+    background-color: var(--bs-theme, #28a745) !important;
+    color: #fff;
+}
+
+.badge-status-pending,
+.badge-status-warning,
+.badge-status-new {
+    background-color: #ffc107 !important;
+    color: #000;
+}
+
+.badge-status-inactive,
+.badge-status-danger,
+.badge-status-lost,
+.badge-status-suspended {
+    background-color: #dc3545 !important;
+    color: #fff;
+}
+
+.badge-status-default {
+    background-color: #6c757d !important;
+    color: #fff;
+}
+
+/* --- EMPTY STATE UTILITIES --- */
+.empty-state {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 4px;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: #adb5bd;
+    margin-bottom: 1rem;
+}
+
+.empty-state-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state-description {
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+}
+
+/* --- TOOLBAR UTILITIES --- */
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.toolbar-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* --- FORM UTILITIES --- */
+.form-label {
+    font-weight: 500;
+    color: #475569;
+    font-size: 0.875rem;
+    margin-bottom: 0.35rem !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--bs-theme, #86b7fe) !important;
+    box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.15) !important;
+}
+
+.required-field::after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* --- TABLE UTILITIES --- */
+.table-wrapper {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+.table th,
+.table td {
+    padding: 0.75rem 1rem !important;
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #f8fafc !important;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    border-bottom-width: 1px !important;
+}
+
+.table tbody tr {
+    transition: background-color 150ms ease;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f5f9 !important;
+}
+
+/* --- COLLAPSIBLE SIDEBAR --- */
+
+/* Mobile Behavior */
+@media (max-width: 767.98px) {
+    #sidebar {
+        margin-left: -260px;
+        position: fixed;
+        z-index: 1050;
+        height: 100vh;
+        overflow-y: auto;
+        transition: all 0.3s;
+    }
+
+    body.sidebar-mobile-show #sidebar {
+        margin-left: 0;
+    }
+}
+
+/* Desktop Collapsed Behavior */
+@media (min-width: 768px) {
+    body.sidebar-collapsed #sidebar {
+        min-width: 70px;
+        max-width: 70px;
+        transition: min-width 200ms ease, max-width 200ms ease;
+    }
+
+    body.sidebar-collapsed #sidebar .sidebar-header {
+        padding: 20px 10px;
+    }
+
+    body.sidebar-collapsed #sidebar .logo-img {
+        max-height: 30px;
+    }
+
+    body.sidebar-collapsed #sidebar small,
+    body.sidebar-collapsed #sidebar .menu-text,
+    body.sidebar-collapsed #sidebar .fa-chevron-down {
+        display: none !important;
+    }
+
+    body.sidebar-collapsed #sidebar ul li a {
+        text-align: center;
+        padding: 15px 10px;
+        display: block !important;
+    }
+
+    body.sidebar-collapsed #sidebar ul li a i.me-2 {
+        margin-right: 0 !important;
+        font-size: 1.2rem;
+    }
+
+    /* Submenu Flyout for Collapsed State */
+    body.sidebar-collapsed #sidebar ul.collapse {
+        display: none !important;
+    }
+
+    body.sidebar-collapsed #sidebar li.nav-item {
+        position: relative;
+    }
+
+    body.sidebar-collapsed #sidebar li.nav-item:hover>ul.collapse {
+        display: block !important;
+        position: absolute;
+        top: 0;
+        left: 70px;
+        /* Collapsed width */
+        width: 220px;
+        background: #2c3136;
+        z-index: 1050;
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+        border-radius: 0 4px 4px 0;
+    }
+
+    body.sidebar-collapsed #sidebar ul.collapse li a {
+        text-align: left;
+        padding: 12px 20px !important;
+    }
+
+    body.sidebar-collapsed #sidebar ul.collapse li a .menu-text {
+        display: inline !important;
+        /* Restore text inside flyout */
+    }
+
+    body.sidebar-collapsed .sidebar-footer {
+        padding: 15px 10px;
+        text-align: center;
+    }
+
+    body.sidebar-collapsed .sidebar-footer i.me-2 {
+        margin-right: 0 !important;
+    }
+}
+
+/* --- SIDEBAR HOVER/TEXT EFFECTS --- */
+#sidebar {
+    transition: min-width 200ms ease, max-width 200ms ease;
+}
+
+#sidebar ul li a {
+    transition: all 150ms ease;
+}
+
+#sidebar ul li a i.me-2,
+#sidebar ul li a i.fa-sign-out-alt {
+    width: 20px;
+    text-align: center;
+}
