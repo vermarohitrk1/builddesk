@@ -47,4 +47,40 @@ class Organisation extends Model
     {
         return $this->belongsTo(SubscriptionPlan::class);
     }
+
+    public function modules()
+    {
+        return $this->hasMany(OrganisationModule::class);
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(OrganisationSubscription::class);
+    }
+
+    public function currentSubscription()
+    {
+        // Simple helper to fetch the latest subscription
+        return $this->hasOne(OrganisationSubscription::class)->latestOfMany();
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($organisation) {
+            $trialDays = config('billing.trial_days', 14);
+            
+            OrganisationSubscription::create([
+                'organisation_id' => $organisation->id,
+                'start_date' => now(),
+                'end_date' => now()->addDays($trialDays),
+                'status' => 'Trial',
+                'type' => 'Trial',
+            ]);
+        });
+    }
 }

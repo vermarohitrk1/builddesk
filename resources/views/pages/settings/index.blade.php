@@ -30,9 +30,16 @@
                         <i class="fas fa-truck fa-fw me-2"></i> Suppliers
                     </a>
 
-                    <a class="list-group-item list-group-item-action text-muted py-3 disabled" role="tab">
-                        <i class="fas fa-briefcase fa-fw me-2"></i> Business Configuration 
-                        <br><small class="ms-4">(Coming Soon)</small>
+                    <a class="list-group-item list-group-item-action fw-bold py-3" 
+                       id="menu-modules" data-bs-toggle="list" href="#content-area" role="tab"
+                       onclick="loadSettingsTab('{{ route('settings.modules') }}')">
+                        <i class="fas fa-briefcase fa-fw me-2"></i> Business Modules
+                    </a>
+
+                    <a class="list-group-item list-group-item-action fw-bold py-3" 
+                       id="menu-billing" data-bs-toggle="list" href="#content-area" role="tab"
+                       onclick="loadSettingsTab('{{ route('settings.billing') }}')">
+                        <i class="fas fa-file-invoice-dollar fa-fw me-2"></i> Billing & Subscriptions
                     </a>
                     
                     <a class="list-group-item list-group-item-action text-muted py-3 disabled" role="tab">

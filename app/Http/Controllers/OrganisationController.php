@@ -52,6 +52,7 @@ class OrganisationController extends Controller
             })
             ->addColumn('actions', function ($org) {
                 $btns = '<button class="btn btn-sm btn-primary modal-trigger" data-url="' . route('admin.organisations.edit', $org->id) . '" data-title="Edit Organisation" data-size="modal-lg"><i class="fas fa-edit"></i> Edit</button>';
+                $btns .= ' <a href="' . route('admin.organisations.show', $org->id) . '" class="btn btn-sm btn-info text-white"><i class="fas fa-cog"></i> Manage</a>';
                 if (Auth::guard('super_admin')->check()) {
                     $btns .= ' <a href="' . route('admin.impersonate', $org->id) . '" class="btn btn-sm btn-warning"><i class="fas fa-user-secret"></i> Login</a>';
                 }
@@ -95,7 +96,22 @@ class OrganisationController extends Controller
             $data['logo'] = $request->file('logo')->store('organisations', 'public');
         }
 
-        $this->organisationRepository->create($data);
+        $organisation = $this->organisationRepository->create($data);
+
+        $availableModules = \App\Models\Module::orderBy('name')->get();
+
+        // Ensure default records exist for this organisation
+        foreach ($availableModules as $module) {
+            $orgModule = \App\Models\OrganisationModule::firstOrCreate([
+                'organisation_id' => $organisation->id,
+                'module_id' => $module->id
+            ]);
+
+            if($module->is_core) {
+                $orgModule->is_enabled = true;
+                $orgModule->save();
+            }
+        }
 
         return $this->ajaxResponse('success', 'Organisation created successfully!', []);
     }
@@ -138,5 +154,41 @@ class OrganisationController extends Controller
         $this->organisationRepository->update($id, $data);
 
         return $this->ajaxResponse('success', 'Organisation updated successfully!', []);
+    }
+
+    public function show($id)
+    {
+        $organisation = $this->organisationRepository->getById($id);
+        
+        $availableModules = \App\Models\Module::all();
+
+        // Ensure default records exist for this organisation
+        foreach ($availableModules as $module) {
+            \App\Models\OrganisationModule::firstOrCreate([
+                'organisation_id' => $organisation->id,
+                'module_id' => $module->id
+            ]);
+        }
+        
+        $organisationModules = \App\Models\OrganisationModule::where('organisation_id', $organisation->id)->get()->keyBy('module_id');
+
+        return view('pages.admin.organisations.show', compact('organisation', 'availableModules', 'organisationModules'));
+    }
+
+    public function updateModules(Request $request, $id)
+    {
+        $organisation = $this->organisationRepository->getById($id);
+        
+        $modules = $request->input('modules', []);
+        
+        foreach ($modules as $moduleId => $moduleData) {
+            \App\Models\OrganisationModule::where('organisation_id', $organisation->id)
+                ->where('module_id', $moduleId)
+                ->update([
+                    'is_enabled' => isset($moduleData['is_enabled']) ? true : false,
+                ]);
+        }
+
+        return redirect()->back()->with('success', 'Modules updated successfully.');
     }
 }

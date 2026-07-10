@@ -158,8 +158,38 @@ class AjaxLibrary {
         const confirmMsg = link.dataset.confirm;
         const data = link.dataset.data;
 
-        if (confirmMsg && !confirm(confirmMsg)) {
-            return;
+        if (confirmMsg) {
+            let title = link.dataset.confirmTitle || 'Confirm Action';
+            let text = confirmMsg;
+            const confirmType = link.dataset.confirmType || 'warning';
+
+            if (confirmMsg.includes('\n\n')) {
+                const parts = confirmMsg.split('\n\n');
+                title = parts[0];
+                text = parts.slice(1).join('<br>');
+            }
+
+            if (typeof Swal !== 'undefined') {
+                const result = await Swal.fire({
+                    title: title,
+                    // text: text,
+                    html: text,
+                    icon: confirmType === 'danger' ? 'error' : confirmType,
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    cancelButtonText: 'Cancel',
+                    customClass: {
+                        confirmButton: confirmType === 'danger' ? 'btn btn-danger' : 'btn btn-primary',
+                        cancelButton: 'btn btn-outline-danger'
+                    }
+                });
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+            } else if (!confirm(confirmMsg)) {
+                return;
+            }
         }
 
         this.setLoadingState(link, true);

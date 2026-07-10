@@ -128,10 +128,20 @@
 
     </ul>
 
+    @if(Auth::guard('super_admin')->check() && !Auth::guard('web')->check())
+    <div class="sidebar-footer">
+        <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit()" title="Logout">
+            <i class="fas fa-sign-out-alt me-2"></i> <span class="menu-text">Logout</span>
+        </a>
+        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" style="display: none;">@csrf</form>
+    </div>
+
+    @else
     <div class="sidebar-footer">
         <a href="javascript:void(0)" onclick="document.getElementById('logout-form').submit()" title="Logout">
             <i class="fas fa-sign-out-alt me-2"></i> <span class="menu-text">Logout</span>
         </a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>
     </div>
+    @endif
 </nav>

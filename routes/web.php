@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\QuotationController;
@@ -56,9 +57,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::resource('employees', EmployeeController::class);
     Route::resource('users', UserController::class);
-    Route::get('/dashboard', function () {
-        return view('pages.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     /**
      * Settings Routes
@@ -67,8 +66,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/settings/partial/basic', [SettingsController::class, 'getBasic'])->name('settings.basic');
     Route::get('/settings/partial/categories', [SettingsController::class, 'getExpenseCategories'])->name('settings.expense_categories');
     Route::get('/settings/partial/suppliers', [SettingsController::class, 'getSuppliers'])->name('settings.suppliers');
+    Route::get('/settings/partial/modules', [SettingsController::class, 'getModules'])->name('settings.modules');
+    Route::post('/settings/modules/{module}/toggle', [SettingsController::class, 'toggleModule'])->name('settings.module.toggle');
     Route::post('/settings/logo', [SettingsController::class, 'updateOrganisationLogo'])->name('settings.logo.update');
-
+    Route::post('/settings/info', [SettingsController::class, 'updateOrganisationInfo'])->name('settings.info.update');
+    
+    Route::get('/settings/partial/billing', [SettingsController::class, 'getBilling'])->name('settings.billing');
+    Route::post('/settings/subscription/start', [SettingsController::class, 'startSubscription'])->name('settings.subscription.start');
+    Route::post('/settings/subscription/cancel', [SettingsController::class, 'cancelSubscription'])->name('settings.subscription.cancel');
     /**
      * Lead Routes
      */
@@ -198,9 +203,10 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AdminAuthController::class, 'login'])->name('login.post');
-    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
     Route::middleware([SuperAdminAuthenticate::class])->group(function () {
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+
         Route::get('/', [AdminDashboardController::class, 'index']);
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         
@@ -212,6 +218,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         //Organisation Routes
         Route::group(['prefix' => 'organisations'], function () {
             Route::get('/datatable', [OrganisationController::class, 'getOrganisationsData'])->name('organisations.datatable');
+            Route::post('/{organisation}/modules', [OrganisationController::class, 'updateModules'])->name('organisations.modules.update');
         });
         Route::resource('organisations', OrganisationController::class);
 
