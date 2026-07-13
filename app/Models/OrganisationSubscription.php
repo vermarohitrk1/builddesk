@@ -13,7 +13,6 @@ class OrganisationSubscription extends Model
         'organisation_id',
         'start_date',
         'end_date',
-        'grace_until',
         'status',
         'type',
         'remarks',
@@ -38,5 +37,25 @@ class OrganisationSubscription extends Model
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'subscription_id');
+    }
+
+    public function getCurrentCycleStart()
+    {
+        $startDateDay = $this->start_date->day;
+        $currentDate = now();
+        $cycleStart = $currentDate->copy();
+        
+        if ($currentDate->day >= $startDateDay) {
+            $cycleStart->day($startDateDay)->startOfDay();
+        } else {
+            $cycleStart->subMonth()->day($startDateDay)->startOfDay();
+        }
+        
+        return $cycleStart;
+    }
+
+    public function getCurrentCycleEnd()
+    {
+        return $this->getCurrentCycleStart()->addMonth()->subDay()->endOfDay();
     }
 }

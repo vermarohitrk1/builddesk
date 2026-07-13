@@ -22,9 +22,21 @@
                 </div>
                 <div class="col-md-3">
                     <p class="text-muted mb-1">Billing Period</p>
+                    @php
+                        $displayStart = $currentSubscription->start_date;
+                        $displayEnd = $currentSubscription->end_date;
+                        
+                        if ($currentSubscription->status === 'Active') {
+                            $displayStart = $currentSubscription->getCurrentCycleStart();
+                            $displayEnd = $currentSubscription->getCurrentCycleEnd();
+                        } elseif ($currentSubscription->status === 'Cancelled') {
+                            // Align the start display to the actual month of cancellation
+                            $displayStart = $currentSubscription->end_date ? $currentSubscription->end_date->copy()->subMonth()->addDay() : $currentSubscription->start_date;
+                        }
+                    @endphp
                     <span class="fw-semibold">
-                        {{ $currentSubscription->start_date ? $currentSubscription->start_date->format('M d, Y') : '-' }} <br>to<br> 
-                        {{ $currentSubscription->end_date ? $currentSubscription->end_date->format('M d, Y') : 'Lifetime' }}
+                        {{ $displayStart ? $displayStart->format('M d, Y') : '-' }} <br>to<br> 
+                        {{ $displayEnd ? $displayEnd->format('M d, Y') : '-' }}
                     </span>
                 </div>
                 <div class="col-md-3">

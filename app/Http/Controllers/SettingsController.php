@@ -163,21 +163,25 @@ class SettingsController extends Controller
         $organisation = Auth::user()->organisation;
         $activeSub = $organisation->currentSubscription;
 
-        if ($activeSub && $activeSub->status === 'Trial') {
+        if ($activeSub && in_array($activeSub->status, ['Trial', 'Cancelled'])) {
             $activeSub->update([
                 'status' => 'Active',
                 'type' => 'Monthly',
-                'start_date' => now(),
-                'end_date' => now()->addMonth(), // Standardize to monthly for now
-                'remarks' => 'Converted from Trial'
+                'end_date' => null, // Ensure continuous life
+                'remarks' => 'Activated Subscription'
             ]);
             
             return $this->ajaxResponse('success', 'Subscription activated successfully!', [
-                'reload' => true // or 'update' to the specific panel handling UI replacement
+                'update' => [
+                    '#settings-content-wrapper' => [
+                        'action' => 'html',
+                        'html' => view('pages.settings.partials.billing', ['currentSubscription' => $activeSub])->render()
+                    ]
+                ]
             ]);
         }
 
-        return $this->ajaxResponse('error', 'No eligible trial subscription found.', []);
+        return $this->ajaxResponse('error', 'No eligible trial or active subscripton found.', []);
     }
 
     public function cancelSubscription()
@@ -186,13 +190,30 @@ class SettingsController extends Controller
         $activeSub = $organisation->currentSubscription;
 
         if ($activeSub && $activeSub->status === 'Active') {
+            // Calculate end of billing cycle relative to anchor start_date
+            $startDateDay = $activeSub->start_date->day;
+            $currentDate = now();
+            
+            $endOfCycle = $currentDate->copy();
+            if ($currentDate->day >= $startDateDay) {
+                $endOfCycle->addMonth()->day($startDateDay)->subDay();
+            } else {
+                $endOfCycle->day($startDateDay)->subDay();
+            }
+
             $activeSub->update([
                 'status' => 'Cancelled',
-                'remarks' => 'Cancelled by user'
+                'end_date' => $endOfCycle->endOfDay(),
+                'remarks' => 'Cancelled by user. Access runs through billing cycle.'
             ]);
             
             return $this->ajaxResponse('success', 'Subscription has been cancelled.', [
-                'reload' => true
+                'update' => [
+                    '#settings-content-wrapper' => [
+                        'action' => 'html',
+                        'html' => view('pages.settings.partials.billing', ['currentSubscription' => $activeSub])->render()
+                    ]
+                ]
             ]);
         }
         
